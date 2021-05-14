@@ -1,0 +1,221 @@
+<div class="fixed-bottom-bar">
+  <div class="osahan-home-page">
+    <div class="bg-primary p-2">
+      <app-header></app-header>
+    </div>
+
+    <div class="">
+
+      <alert *ngIf="globalAlertStatus != ''" type="info" [dismissOnTimeout]="10000">
+        <strong>{{globalAlertStatus}}</strong>
+      </alert>
+      <div class="container">
+        <div class="main-body">
+
+          <!-- Breadcrumb -->
+          <nav aria-label="breadcrumb" class="main-breadcrumb">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a routerLink="/">{{'home'|translate}}</a></li>
+              <li class="breadcrumb-item active" aria-current="page">{{'profile'|translate}}</li>
+            </ol>
+          </nav>
+          <!-- /Breadcrumb -->
+
+          <div class="row gutters-sm" *ngIf="isLogin">
+            <div class="col-md-4 mb-3">
+              <div class="card">
+                <div class="card-body">
+                  <div class="d-flex flex-column align-items-center text-center">
+                    <img src="{{picture}}" alt="{{user.name}}" class="rounded-circle" width="150" height="120">
+                    <div class="mt-3">
+                      <h4>{{user.name}} {{user.surname}}</h4>
+                      <p class="text-secondary mb-1" *ngIf="user.type == 0">Admin</p>
+                      <p class="text-secondary mb-1" *ngIf="user.type == 10">{{'owner'|translate}}</p>
+                      <p class="text-secondary mb-1" *ngIf="user.type == 11">{{'manager'|translate}}</p>
+                      <p class="text-secondary mb-1" *ngIf="user.type == 20">{{'client'|translate}}</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="card-footer">
+                  <button class="btn btn-link"  style="margin-bottom: 14px" size="small"(click)="open2(dialog2)">
+                    <i class="feather-edit"></i> {{'picture'|translate}}
+                  </button>
+                  <button class="btn btn-link" style="margin-bottom: 14px" size="small" (click)="open(dialog)">
+                    <i class="feather-edit"></i> {{'password'|translate}}</button>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-8">
+              <div class="card mb-3">
+                <div class="card-header" >
+                  <h6 class="card-title"><i class="feather-user"></i> {{user?.surname | uppercase}} {{user?.name | uppercase}}</h6>
+                  <p><i class="feather-at-sign"></i> {{user?.email}} </p>
+                  <p><i class="feather-phone"></i> {{user?.phone}} </p>
+                  <p *ngIf="user?.birthday"><i class="feather-calendar"></i> {{user?.birthday}} </p>
+
+
+                </div>
+                <div class="card-body">
+                  <form [formGroup]="editForm" (ngSubmit)="onSubmitForm()" *ngIf="this.editForm">
+                    <div class="form-group">
+                      <label class="label" for="phone">{{'phone'|translate}}</label>
+                      <input class="form-control" formControlName="phone"   type="text" id="phone"/>
+                      <ng-container *ngIf="f.phone.invalid && f.phone.touched ">
+                        <p class="text-danger small" *ngIf="f.phone.errors?.required">
+                          {{'required field'|translate}}
+                        </p>
+                        <p class="text-danger small" *ngIf="f.phone.errors?.pattern">
+                          {{'minimun phone length'|translate}}
+                        </p>
+                      </ng-container>
+                    </div>
+                    <div class="form-group">
+                      <label class="label" for="birthday">{{'birthday'|translate}}</label>
+                      <input class="form-control" formControlName="birthday"  type="date" id="birthday"/>
+                    </div>
+
+                    <button class="btn btn-outline-secondary" [disabled]="editForm.invalid || (user.phone == f.phone.value &&  f.birthday.value == '')" type="submit">
+                      {{'update'|translate}} <img *ngIf="loadingForm" class="pt-3 font-weight-bold ml-auto loader" src="assets/img/spinner.gif" />
+                    </button>
+
+
+                  </form>
+
+
+
+
+                </div>
+
+
+
+
+              </div>
+
+
+            </div>
+
+            <ng-template #dialog2 let-data let-ref="dialogRef">
+              <div class="modal-header login">
+                <h5 class="modal-title" id="exampleModalLabel">{{'edit picture'|translate}}</h5>
+                <button (click)="modalRef2.hide()" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <form [formGroup]="editImage" (ngSubmit)="onSubmitImage()" *ngIf="this.editForm">
+                  <!-- Select File -->
+                  <input class="form-control" type="file" accept="image/*" (change)="showPreview($event)" />
+
+                  <!-- Image Preview -->
+                  <div class="imagePreview" *ngIf="imageURL && imageURL !== ''">
+                    <img class=" img-profile-preview" [src]="imageURL" [alt]="editImage.value.name" height="250px" width="300px">
+                  </div>
+                  <ng-container *ngIf="imageError">
+                    <p class="text-danger small">
+                      {{'max file size error'|translate}}
+                    </p>
+                  </ng-container>
+
+                  <div class="modal-footer">
+                    <button type="submit" class="btn btn-link pull-right" [disabled]="imageURL == ''">
+                      {{'update'|translate}}
+                      <img *ngIf="loadingFormImage" class="pt-3 font-weight-bold ml-auto loader" src="assets/img/spinner.gif" />
+                    </button>
+                    <button (click)="modalRef2.hide()" type="button" class="btn btn-secondary" data-dismiss="modal">{{'close'|translate}}</button>
+                  </div>
+
+
+                </form>
+              </div>
+            </ng-template>
+            <ng-template #dialog let-data let-ref="dialogRef">
+              <div class="modal-header login">
+                <h5 class="modal-title">{{'edit password'|translate}}</h5>
+                <button (click)="modalRef.hide()" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <form [formGroup]="editPass" (ngSubmit)="onSubmitPass()" *ngIf="this.editPass">
+                  <label class="label" for="c-password">{{'current password'|translate}} </label>
+                  <ng-container class="row" *ngIf="f2.old_password.invalid && f2.old_password.touched ">
+                    <p class="text-danger small" *ngIf="f2.old_password.errors?.required">
+                      {{'required field'|translate}}
+                    </p>
+                    <p class="text-danger small" *ngIf="f2.old_password.errors?.minlength">
+                      {{'password length'|translate}}
+                    </p>
+                  </ng-container>
+                  <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                      <button (click)="toggleShowPassword(1)" class="btn btn-outline-secondary"><span [class]="{'feather-eye-off': showPassword, 'feather-eye' : !showPassword}"></span></button>
+                    </div>
+                    <input class="form-control" formControlName="old_password" [type]="getInputType(1)" id="c-password">
+                  </div>
+
+                  <label class="label" for="n-password">{{'new password'|translate}}</label>
+                  <ng-container *ngIf="f2.password.invalid && f2.password.touched ">
+                    <p class="text-danger small" *ngIf="f2.password.errors?.required">
+                      {{'required field'|translate}}
+                    </p>
+                    <p class="text-danger small" *ngIf="f2.password.errors?.minlength">
+                      {{'password length'|translate}}
+                    </p>
+                  </ng-container>
+                  <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                      <button (click)="toggleShowPassword(2)" class="btn btn-outline-secondary"><span [class]="{'feather-eye-off': showPassword2, 'feather-eye' : !showPassword2}"></span></button>
+                    </div>
+                    <input class="form-control" formControlName="password" [type]="getInputType(2)" id="n-password">
+                  </div>
+
+                  <label class="label" for="nr-password">{{'new password again'|translate}}</label>
+                  <ng-container *ngIf="f2.rpassword.invalid && f2.rpassword.touched ">
+                    <p class="text-danger small" *ngIf="f2.rpassword.errors?.required">
+                      {{'required field'|translate}}
+                    </p>
+                    <p class="text-danger small " *ngIf="f2.rpassword.errors?.MatchPassword">
+                      {{'password mismatch'|translate}}
+                    </p>
+                  </ng-container>
+                  <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                      <button (click)="toggleShowPassword(3)" class="btn btn-outline-secondary"><span [class]="{'feather-eye-off': showPassword3, 'feather-eye' : !showPassword3}"></span></button>
+                    </div>
+                    <input class="form-control" formControlName="rpassword"   [type]="getInputType(3)" id="nr-password">
+                  </div>
+
+                  <ng-container *ngIf="editPassError !=''">
+                    <p class="text-danger small">
+                      {{editPassError}}
+                    </p>
+                  </ng-container>
+
+                  <div class="modal-footer">
+
+                    <button type="submit" class="btn btn-link"  [disabled]="editPass.invalid" >
+                      {{'update'|translate}} <img *ngIf="loadingFormPass" class="pt-3 font-weight-bold ml-auto loader" src="assets/img/spinner.gif" />
+
+                    </button>
+                    <button (click)="modalRef.hide()" type="button" data-dismiss="modal" aria-label="Close" class="btn btn-secondary" (click)="modalRef.hide()" style="margin-right: 14px">{{'close'|translate}}</button>
+
+                  </div>
+
+
+                </form>
+              </div>
+
+            </ng-template>
+
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <app-footer></app-footer>
+  </div>
+
+</div>
+

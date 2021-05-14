@@ -1,0 +1,375 @@
+<div class="mt-5 osahan-menu-fotter fixed-bottom bg-white px-3 py-2 text-center">
+  <div class="row">
+    <div class="col selected">
+      <a routerLink="/" class="text-danger small font-weight-bold text-decoration-none">
+        <p class="h4 m-0"><i class="feather-home text-danger"></i></p>
+        {{'home'|translate}}
+      </a>
+    </div>
+    <div class="col bg-white rounded-circle mt-n4 px-3 py-2">
+      <div class="bg-danger rounded-circle mt-n0 shadow">
+        <a style="cursor: pointer" (click)="openModal2(template2)" class="text-white small font-weight-bold text-decoration-none">
+          <i class="feather-shopping-cart"></i><sup style="top: -2.5em!important;left: 1.3em!important;"><span *ngIf="cart?.items?.length>0" class="badge badge-dark text-white">{{cart.items.length}}</span></sup>
+        </a>
+      </div>
+    </div>
+    <div class="col " *ngIf="isLogin">
+      <a routerLink="/my/notifications" class="text-danger small font-weight-bold text-decoration-none">
+        <p class="h4 m-0"><i class="feather-bell"></i>
+          <sup ><span *ngIf="notRead>0" class="badge badge-dark text-white">{{notRead}}</span></sup>
+        </p>
+        Notifications
+      </a>
+    </div>
+    <div class="col">
+      <a *ngIf="isLogin" routerLink="/user/profil/@/{{username}}/{{userId}}" class="text-dark small font-weight-bold text-decoration-none">
+        <p class="h4 m-0"><i class="feather-user"></i></p>
+        {{'profile'|translate}}
+      </a>
+
+      <a style="cursor: pointer" *ngIf="!isLogin" (click)="openModal(template)" class="text-danger small font-weight-bold text-decoration-none">
+        <p class="h4 m-0"><i class="feather-log-in text-danger"></i></p>
+        {{'connexion'|translate}}
+      </a>
+      <ng-template #template>
+            <div class="modal-header login">
+              <img src="assets/img/lepoint.png" class="" style="width: 100px;height: 50px" />
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modalRef.hide()">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body bg-white ">
+              <alert *ngIf="alertStatus" type="info" [dismissOnTimeout]="5000">
+                <strong>{{alertMsg}}!</strong>
+              </alert>
+
+              <div *ngIf="activeForm==1" class="card fat">
+                <div class="card-body">
+                  <h4 class="card-title">{{'login'|translate}}</h4>
+                  <form  [formGroup]="form" (ngSubmit)="login()">
+                    <div class="form-group">
+                      <label for="email">{{'email'|translate}}</label>
+                      <input id="email" type="email" class="form-control " name="email" formControlName="email" required autofocus>
+                      <div *ngIf="f1.email.invalid && f1.email.touched && f1.email.errors?.email" class="text-danger ">
+                        <small>{{'email invalid'|translate}}</small>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="password">{{'password'|translate}}
+                        <small class=" ml-auto text-primary " style="margin-left: 8px;cursor: pointer" (click)="activateResetForm()">
+                          {{'forget password'|translate}} ?
+                        </small>
+                      </label>
+                      <input id="password" type="password" class="form-control" name="password" formControlName="password" required data-eye>
+                      <div *ngIf="f1.password.invalid && f1.password.touched && f1.password.errors?.required" class="text-danger">
+                        {{'password is required'|translate}}
+                      </div>
+                    </div>
+                    <div *ngIf="formError!=''" class="form-group text-danger">
+                      {{formError}}
+                    </div>
+
+
+                    <div class="form-group m-0">
+                      <button type="submit" [disabled]="!form.valid||loadingForm" class="btn btn-primary btn-block">
+                        {{'login'|translate}}
+                        <img *ngIf="loadingForm"  class=" font-weight-bold ml-auto loader-min" src="assets/img/spinner.gif" />
+
+                      </button>
+                    </div>
+                    <div class="mt-4 text-center">
+                      {{'dont have an account'|translate}} ? <small class="text-primary" style="cursor: pointer"  (click)="activateSigninForm()">{{'create one'|translate}}</small>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              <div *ngIf="activeForm==2" class="card fat">
+                <div class="card-body">
+                  <h4 class="card-title">{{'inscription'|translate}}</h4>
+                  <form  [formGroup]="form2" (ngSubmit)="signUp()">
+                    <div class="form-group">
+                      <label for="reg_name">{{'name'|translate}}</label>
+                      <input id="reg_name" type="text" class="form-control" formControlName="name" name="name" required autofocus>
+                      <div  *ngIf="f2.name.invalid && f2.name.touched && f2.name.errors?.minlength" class="text-danger">
+                        {{'name error'|translate}}
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="reg_surname">{{'surname'|translate}}</label>
+                      <input id="reg_surname" type="text" class="form-control" formControlName="surname" name="surname" autofocus>
+                      <div class="text-danger">
+
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="reg_email">{{'email'|translate}}</label>
+                      <input id="reg_email" type="email" class="form-control" formControlName="email" name="email" required>
+                      <div *ngIf="f2.email.invalid && f2.email.touched && f2.email.errors?.email" class="text-danger">
+                        {{'email error'|translate}}
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="reg_phone">{{'phone'|translate}}</label>
+                      <input id="reg_phone" type="text" class="form-control" formControlName="phone" name="phone" required autofocus>
+                      <div *ngIf="f2.phone.invalid && f2.phone.touched && f2.phone.errors?.minlength" class="text-danger">
+                        {{'phone error'|translate}}
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="reg_gender">{{'gender'|translate}}</label>
+                      <select id="reg_gender" class="form-control" formControlName="gender" name="gender" required>
+                        <option value="1">{{'man'|translate}}</option>
+                        <option value="0">{{'woman'|translate}}</option>
+                      </select>
+                      <div class="text-danger">
+
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="reg_type">{{'account type'|translate}}</label>
+                      <select id="reg_type" class="form-control" name="type" formControlName="type" required>
+                        <option value="20" selected>{{'customer account'|translate}}</option>
+                        <option value="10">{{'owner account'|translate}}</option>
+                      </select>
+                      <div class="text-danger">
+
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="reg_password">{{'password'|translate}}</label>
+                      <input  id="reg_password" type="password" class="form-control" formControlName="password" name="password" required data-eye>
+                      <div *ngIf="f2.password.invalid && f2.password.touched && f2.password.errors?.minlength" class="text-danger">
+                        {{'password error'|translate}}
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="custom-checkbox custom-control">
+                        <div class="text-danger">
+                          {{'agree term'|translate}}
+                        </div>
+                      </div>
+                    </div>
+                    <div *ngIf="form2Error!=''" class="form-group text-danger">
+                      {{form2Error}}
+                    </div>
+
+                    <div class="form-group m-0">
+                      <button [disabled]="!form2.valid||loadingForm" type="submit" class="btn btn-primary btn-block">
+                        {{'inscription'|translate}}<img *ngIf="loadingForm"  class=" font-weight-bold ml-auto loader-min" src="assets/img/spinner.gif" />
+                      </button>
+                    </div>
+                    <div class="mt-4 text-center">
+                      {{'already have an account'|translate}} ? <small style="cursor: pointer" class="text-primary" (click)="activateLoginForm()">{{'login'|translate}}</small>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              <div *ngIf="activeForm==3" class="card fat">
+                <div class="card fat">
+                  <div class="card-body">
+                    <h4 class="card-title">{{'reset password'|translate}}</h4>
+                    <form [formGroup]="form3" (ngSubmit)="reset()" class="my-login-validation" novalidate="">
+                      <div class="form-group">
+                        <label for="new-email">{{'email'|translate}}</label>
+                        <input id="new-email" type="text" class="form-control" formControlName="email"  name="new-email" required autofocus >
+                        <div *ngIf="f3.email.invalid && f3.email.touched && f3.email.errors?.email" class="text-danger">
+                          {{'email invalid'|translate}}
+                        </div>
+                      </div>
+                      <div *ngIf="form3Error!=''" class="form-group text-danger">
+                        {{form3Error}}
+                      </div>
+
+                      <div class="form-group m-0">
+                        <button [disabled]="!form3.valid||loadingForm" type="submit" class="btn btn-primary btn-block">
+                          {{'reset'|translate}} <img *ngIf="loadingForm"  class=" font-weight-bold ml-auto loader-min" src="assets/img/spinner.gif" />
+
+                        </button>
+                      </div>
+                      <div class="mt-4 text-center">
+                        <small class="text-primary" style="cursor: pointer" (click)="activateLoginForm()">{{'login'|translate}}</small>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+      </ng-template>
+      <ng-template #template2>
+            <div class="modal-header login">
+              <img src="assets/img/lepoint.png" class="" style="width: 100px;height: 50px" />
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modalRef2.hide()">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body bg-white ">
+              <alert *ngIf="alertStatus" type="info" [dismissOnTimeout]="5000">
+                <strong>{{alertMsg}}!</strong>
+              </alert>
+
+              <div *ngIf="activeForm==1" class="card fat">
+                <h6 class="card-title" style="margin: 1.5rem">{{'your current cart'|translate}}</h6>
+                <div class="card-body" style="padding: 0!important;">
+
+                  <div *ngIf="cartToShow !== null" class="p-1 osahan-cart-item">
+
+                      <div class="shadow bg-white rounded p-3 clearfix">
+
+                        <img alt="osahan" style="width: 40px; height: 40px" src="{{cartToShow.entity.global_info.image}}" class="mr-3 rounded-circle img-fluid">
+                        <div class="d-flex flex-column">
+                          <h6 class="mb-1 font-weight-bold">{{cartToShow.entity.global_info.name}}</h6>
+                          <p class="mb-0 small text-muted"><i class="feather-map-pin"></i> {{cartToShow.entity.location.city}}, {{cartToShow.entity.location.street}}, {{cartToShow.entity.location.street_detail}}</p>
+                        </div>
+                        <div *ngIf="cartToShow.entity.global_info.whatsapp_phone != null && cartToShow.entity.global_info.whatsapp_phone != ''" class="row container-fluid mb-2">
+                          <p style="font-size: 14px; " class="font-weight-light text-dark m-0" >
+                            <img style="height: 15px;width: 15px" src="assets/img/whatsapp.png"/>
+                            <a style="color: black;font-size: 12px" target="_blank" href="https://api.whatsapp.com/send?phone{{cartToShow.entity.global_info.whatsapp_phone.replace(' ', '') }}=&text=Hi"> {{cartToShow.entity.global_info.whatsapp_phone}}</a>
+                          </p>
+                        </div>
+                        <div *ngIf="cartToShow.entity.global_info.facebook_page != null && cartToShow.entity.global_info.facebook_page != ''" class="row container-fluid mb-2">
+                          <p style="font-size: 14px; " class="font-weight-light text-dark m-0" >
+                            <img style="height: 15px;width: 15px" src="assets/img/facebook.png"/>
+                            <a style="color: black;font-size: 12px" target="_blank" href="{{ cartToShow.entity.global_info.facebook_page.replace(' ', '') }}"> {{cartToShow.entity.global_info.facebook_page.replace(' ', '')}}</a>
+                          </p>
+                        </div>
+                        <div *ngIf="cartToShow.entity.global_info.website != null && cartToShow.entity.global_info.website != ''" class="row container-fluid mb-2">
+                          <p style="font-size: 14px; " class="font-weight-light text-dark m-0" >
+                            <img style="height: 15px;width: 15px" src="assets/img/website.png"/>
+                            <a style="color: black;font-size: 12px" target="_blank" href="{{ cartToShow.entity.global_info.website.replace(' ', '') }}"> {{cartToShow.entity.global_info.website.replace(' ', '')}}</a>
+                          </p>
+                        </div>
+                        <h6  style="font-size: 11px">{{'payment method'}}</h6>
+                        <div class="row container-fluid mb-2">
+
+                          <div  *ngFor="let pay of cartToShow.entity.accepted_pay_modes" class="card profile-card-5" style="width: 33%;align-items: center;min-height: 130px">
+                            <div class="card-img-block">
+                              <img class="card-img-top" style="height: 50px;width: 60px" src="assets/base-image/{{pay.pay_mode.image}}" alt="Card image cap">
+                            </div>
+                            <div class="card-body pt-0" style="padding: 0.4rem">
+                              <h6 style="font-size: 10px" class="card-title">{{pay.pay_mode.name}}</h6>
+                              <p *ngIf="pay.pay_mode.name != 'Cash' && pay.detail_one != null" style="font-size: 10px" class="card-text">{{pay.detail_one}} </p>
+                              <p *ngIf="pay.pay_mode.name != 'Cash' && pay.detail_two != null" style="font-size: 10px" class="card-text">{{pay.detail_two}} </p>
+                            </div>
+                          </div>
+
+
+                        </div>
+                        <div *ngFor="let it of cartToShow.cartItem" class="gold-members d-flex align-items-center justify-content-between  py-2 border-bottom">
+                          <div class="media align-items-center">
+                            <img style="height: 50px;width: 50px" src="{{it.menu.image}}" alt="" class="mr-3 rounded-pill ">
+                            <div class="media-body">
+                              <p class="m-0" style="font-size: 11px;">{{it.menu.name}}</p>
+                            </div>
+                          </div>
+                          <div class="d-flex align-items-center">
+                            <span class="count-number float-right"><button (click)="removeItemQuantity(it.menu.id)" type="button" class="btn-sm left dec btn btn-outline-secondary"> <i class="feather-minus"></i> </button><input class="count-number-input" type="text" readonly="" value="{{it.quantity}}"><button (click)="addItemQuantity(it.menu.id)" type="button" class="btn-sm right inc btn btn-outline-secondary"> <i class="feather-plus"></i> </button></span>
+                            <p class="text-gray mb-0 float-right ml-2 text-muted small">XAF {{it.menu.price * it.quantity}}</p>
+                          </div>
+                        </div>
+                        <p class="mb-1 font-weight-bold">{{'to pay'|translate}} <span class="float-right text-dark">XAF {{cartToShow.totalPrice}}</span></p>
+
+
+                      </div>
+                  </div>
+                  <div *ngIf="cartToShow !== null" class="container-fluid d-flex flex-column mb-2">
+                    <h6 class="mb-1">{{'user detail'|translate}}</h6>
+                    <form  [formGroup]="form4" (ngSubmit)="sendOrder()">
+                      <div class="form-group">
+                        <label for="order_name">{{'name'|translate}}</label>
+                        <input id="order_name" type="text" class="form-control" formControlName="name" name="name" required autofocus>
+                        <div  *ngIf="f4.name.invalid && f4.name.touched && f4.name.errors?.minlength" class="text-danger">
+                          {{'name error'|translate}}
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label for="order_phone">{{'phone'|translate}}</label>
+                        <input id="order_phone" type="text" class="form-control" formControlName="phone" name="phone" required autofocus>
+                        <div *ngIf="f4.phone.invalid && f4.phone.touched && f4.phone.errors?.pattern" class="text-danger">
+                          {{'phone error'|translate}}
+                        </div>
+                      </div>
+
+                      <div class="form-group form-check" >
+                        <input (change)="clientLocation($event)" type="checkbox" formControlName="is_inside" name="is_inside" id="is_inside" class="form-check-input" />
+                        <label for="is_inside" class="form-check-label">{{'inside restaurant'|translate}}</label>
+                      </div>
+
+                      <div class="form-group" *ngIf="clientInside == true">
+                        <label for="order_place">{{'table number'|translate}}</label>
+                        <input id="order_place" type="text" class="form-control" formControlName="place" name="place" autofocus>
+                        <div  *ngIf="f4.place.invalid && f4.place.touched && f4.place.errors?.required" class="text-danger">
+                          {{'required field'|translate}}
+                        </div>
+                      </div>
+
+                      <div class="form-group" *ngIf="clientInside == false">
+                        <label for="city">{{'city'|translate}} </label>
+                        <input id="city" type="text" class="form-control" formControlName="city" name="city" readonly required>
+                        <div class="text-danger">
+
+                        </div>
+                      </div>
+
+                      <div class="form-group" *ngIf="clientInside == false">
+                        <label for="street">{{'street'|translate}} *</label>
+                        <input id="street" type="text" class="form-control" formControlName="street" name="street" required autofocus>
+                        <div  *ngIf="f4.street.invalid && f4.street.touched && f4.street.errors?.minlength" class="text-danger">
+                          {{'name error'|translate}}
+                        </div>
+                      </div>
+
+                      <div class="form-group" *ngIf="clientInside == false">
+                        <label for="street_detail">{{'street_detail'|translate}} *</label>
+                        <input id="street_detail" type="text" class="form-control" formControlName="street_detail" name="street_detail" autofocus>
+                        <div  *ngIf="f4.street_detail.invalid && f4.street_detail.touched && f4.street_detail.errors?.minlength" class="text-danger">
+                          {{'name error'|translate}}
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label for="pay_mode">{{'payment method'|translate}}</label>
+                        <select  id="pay_mode" class="form-control" formControlName="pay_mode" name="pay_mode" required>
+                          <option *ngFor="let pay of cartToShow.entity.accepted_pay_modes" value="{{pay.id}}">{{pay.pay_mode.name}}</option>
+                        </select>
+                        <div  *ngIf="f4.pay_mode.invalid && f4.pay_mode.touched && f4.pay_mode.errors?.required" class="text-danger">
+                          {{'required field'|translate}}
+                        </div>
+                      </div>
+
+
+                      <div *ngIf="form4Error!=''" class="form-group text-danger">
+                        {{form4Error}}
+                      </div>
+
+                      <div class="form-group m-0">
+                        <button (click)="cancelOrder()" class="btn btn-primary">{{'cancel'|translate}}</button>
+                        <button [disabled]="!form4.valid||loadingForm4" type="submit" class="btn btn-success float-right">{{'pay'|translate}}
+                          <img *ngIf="loadingForm4"  class=" font-weight-bold ml-auto loader-min" src="assets/img/spinner.gif" />
+                        </button>
+
+                      </div>
+                    </form>
+                  </div>
+
+                </div>
+              </div>
+
+            </div>
+      </ng-template>
+
+
+
+    </div>
+  </div>
+</div>
+

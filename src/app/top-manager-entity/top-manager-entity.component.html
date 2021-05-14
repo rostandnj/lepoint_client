@@ -1,0 +1,309 @@
+<div class="fixed-bottom-bar">
+  <div class="osahan-home-page">
+    <div class="bg-primary p-2">
+      <app-header></app-header>
+
+    </div>
+
+
+    <div class=" container-fluid main-content">
+
+      <alert *ngIf="globalAlertStatus != ''" type="info" [dismissOnTimeout]="10000">
+        <strong>{{globalAlertStatus}}</strong>
+      </alert>
+
+      <div class="px-3  title d-flex align-items-center background-qr row" style="min-height: 50px">
+
+        <em *ngIf="![1,10,11].includes(userType)&& !loading" class="m-0 pt-3">{{'page denied'|translate}} </em>
+        <img *ngIf="loading" class="pt-3 font-weight-bold ml-auto loader" src="assets/img/spinner.gif" />
+      </div>
+
+      <div class="d-flex row"  *ngIf="userType != null && [1,10,11].includes(userType)">
+
+        <!-- Sidebar -->
+        <div class="col-lg-3 col-md-3 col-sm-12" >
+          <div class="sidebar-heading">
+            <h6 class="m-0 pt-2 mb-2">{{'manage services'|translate}} </h6>
+          </div>
+          <div class="list-group list-group-flush">
+            <label style="margin-bottom: -10px;margin-top: 10px" class="" for="selected-entity"><h6 style="font-size: 13px">{{'entity'|translate}}</h6></label>
+            <select [(ngModel)]="choosenEntity" (change)="chooseEntity()" class="custom-select my-1 mr-sm-2" id="selected-entity">
+              <option selected disabled value="">{{'choose'|translate}}...</option>
+              <option *ngFor="let elt of entityListName " value="{{elt.value}}">{{elt.title|translate}}</option>
+            </select>
+          </div>
+        </div>
+        <!-- /#sidebar-wrapper -->
+
+        <!-- Page Content -->
+        <div class="col-lg-9 col-md-9 col-sm-12 mt-2">
+          <div class="card bg-white ">
+
+            <nav class="card-header navbar navbar-expand-lg navbar-light bg-white mb-1 ">
+              <h5 class="mt-4" *ngIf="choosenEntity != ''">{{choosenEntityName|translate}}</h5>
+              <h5 class="mt-4" *ngIf="choosenEntity == '' && activeDashboard == 'orders'">{{'orders'|translate}} </h5>
+              <button *ngIf="choosenEntity != '' && [1,10].includes(userType) " class="btn btn-primary ml-auto" id="menu-toggle" (click)="openModal(template)">{{'register entity'|translate}}</button>
+            </nav>
+
+            <!-- manage entity start -->
+            <div class="card-body">
+              <div class="p-2 border-bottom gold-members" *ngFor="let ent of entities">
+                        <span class="float-right">
+
+                          <button class="btn btn-secondary btn-sm dropdown-toggle small small-btn" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Action
+                          </button>
+                          <div class="dropdown-menu dropdown-action">
+                             <a class="dropdown-item btn btn-link" routerLink="/manage/entity/{{ent.global_info.slug}}-{{ent.id}}" ><span class="feather-settings"></span> {{'manage'|translate}}</a>
+                             <button  *ngIf="ent.status === true &&  [1,10].includes(userType)" class="dropdown-item btn btn-link" (click)="changeEntityStatus(ent, 0)" ><span class="feather-lock"></span> {{'lock'|translate}}</button>
+                             <button *ngIf="ent.status === false &&  [1,10].includes(userType)" class="dropdown-item btn btn-link" (click)="changeEntityStatus(ent, 1)" ><span class="feather-unlock"></span> {{'unlock'|translate}}</button>
+                           <button *ngIf=" [1].includes(userType)" class="dropdown-item btn btn-link" (click)="openModalActivation(templateActivation, ent)" >{{'activation'|translate}}</button>
+                           <button *ngIf="[1,2,3].includes(number(ent.type)) &&  [1,10].includes(userType)" class="dropdown-item btn btn-link" (click)="changeCanOrder(ent.id)" >
+                             <span *ngIf="ent.can_order === true" class="feather-x-circle"></span>
+                             <span *ngIf="ent.can_order === false" class="feather-check-circle"></span> {{'use order system'|translate}}
+                           </button>
+
+                          </div>
+
+                        </span>
+                <div class="media">
+                  <div [ngClass]="{'text-danger': !ent.status, 'text-success': ent.status}" class="mr-3 font-weight-bold non_veg">
+                    <span style="font-size: 10px" [ngClass]="{'feather-check': ent.status == true, 'feather-x': ent.status == false}"></span>
+                  </div>
+                  <div class="media-body">
+                    <h6 class="mb-1">{{ent.global_info.name}}</h6>
+                    <p class="text-muted mb-0 small">{{ent.location.city}}, {{ent.location.street}}</p>
+                    <p class=" mb-0 small"> <span   class="badge badge-light text-white" [ngStyle]="{'background-color':ent.entity_activation.is_valid == true?'green':'red','font-size': '8px'}"  >{{'valide up to'|translate}} {{ent.entity_activation.end_date}}</span> </p>
+                    <a target="_blank" class="text-dark font-weight-bold ml-auto" href="{{configLink}}?id={{ent.id}}"><i class="feather-download"></i>qr-code</a>
+
+                  </div>
+                </div>
+              </div>
+              <button (click)="getEntitiesMore()" *ngIf="canLoadMore" class="btn btn-primary btn-block">
+                {{'load more'|translate}}<img *ngIf="loadingMore"  class=" font-weight-bold ml-auto loader-min" src="assets/img/spinner.gif" />
+              </button>
+
+            </div>
+            <!-- manage entity end -->
+
+          </div>
+        </div>
+
+
+
+      </div>
+      <!-- /#wrapper -->
+
+      <!-- template entity -->
+      <ng-template #template>
+        <div class="modal-header login">
+          <img src="assets/img/lepoint.png" class="" style="width: 100px;height: 50px" />
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body bg-white ">
+          <alert *ngIf="alertStatus" type="info" [dismissOnTimeout]="5000">
+            <strong>{{alertMsg}}!</strong>
+          </alert>
+
+          <div class="card fat">
+            <div class="card-body">
+              <h4 class="card-title">{{choosenEntityName|translate}}</h4>
+              <form  [formGroup]="formEntity" (ngSubmit)="resgisterEntity()">
+                <div class="form-group">
+                  <label for="reg_name">{{'name'|translate}} *</label>
+                  <input id="reg_name" type="text" class="form-control" formControlName="name" name="name" required autofocus>
+                  <div  *ngIf="f1.name.invalid && f1.name.touched && f1.name.errors?.minlength" class="text-danger">
+                    {{'name error'|translate}}
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="reg_description">{{'description'|translate}} *</label>
+                  <textarea  id="reg_description" class="form-control" formControlName="description" name="description"></textarea>
+                  <div *ngIf="f1.description.invalid && f1.description.touched && f1.description.errors?.minlength"  class="text-danger">
+                    {{'description error'|translate}}
+                  </div>
+                </div>
+                <div class="form-group" *ngIf="showCategoryMenu">
+                  <label for="base_categories">{{'categories'|translate}} <em style="font-size: 9px">{{'category helper'|translate}}</em> *</label>
+                  <select multiple id="base_categories" class="form-control" formControlName="base_categories" name="base_categories" required>
+                    <ng-container *ngFor="let cat of baseCategoriesToShow">
+                      <option *ngIf="currentLang == 'fr'"  value="{{cat.id}}">{{cat.name_fr}} </option>
+                      <option *ngIf="currentLang == 'en'"  value="{{cat.id}}">{{cat.name_en}} </option>
+                    </ng-container>
+                  </select>
+                  <div *ngIf="f1.base_categories.invalid && f1.base_categories.touched && f1.base_categories.errors?.required" class="text-danger">
+                    {{'required field'|translate}}
+
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="country_id">{{'country'|translate}} *</label>
+                  <select id="country_id" class="form-control" formControlName="country_id" name="country_id" required>
+                    <option value="cm" selected>Cameroun</option>
+                  </select>
+                  <div class="text-danger">
+
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="city">{{'city'|translate}} *</label>
+                  <select id="city" class="form-control" formControlName="city" name="city" required>
+                    <option *ngFor="let city of cities" value="{{city.name}}">{{city.name}} </option>
+                  </select>
+                  <div class="text-danger">
+
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="street">{{'street'|translate}} *</label>
+                  <input id="street" type="text" class="form-control" formControlName="street" name="street" required autofocus>
+                  <div  *ngIf="f1.street.invalid && f1.street.touched && f1.street.errors?.minlength" class="text-danger">
+                    {{'name error'|translate}}
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="street_detail">{{'street_detail'|translate}}</label>
+                  <input id="street_detail" type="text" class="form-control" formControlName="street_detail" name="street_detail" autofocus>
+                </div>
+
+                <div class="form-group">
+                  <label for="phone1">{{'phone'|translate}} 1 *</label>
+                  <input id="phone1" type="text" class="form-control" formControlName="phone1" name="phone1" required>
+
+                  <div *ngIf="f1.phone1.invalid && f1.phone1.touched" class="text-danger">
+                    <p class="text-danger small" *ngIf="f1.phone1.errors?.required">
+                      {{'required field'|translate}}
+                    </p>
+                    <p class="text-danger small" *ngIf="f1.phone1.errors?.pattern">
+                      {{'minimun phone length'|translate}}
+                    </p>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="phone2">{{'phone'|translate}} 2</label>
+                  <input id="phone2" type="text" class="form-control" formControlName="phone2" name="phone2">
+                  <div  class="text-danger">
+
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="website">{{'website'|translate}}</label>
+                  <input id="website" type="text" class="form-control" formControlName="website" name="website" autofocus>
+                  <div  class="text-danger">
+
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="facebook_page">{{'facebook link'|translate}}</label>
+                  <input id="facebook_page" type="text" class="form-control" formControlName="facebook_page" name="facebook_page" autofocus>
+                  <div  class="text-danger">
+
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="whatsapp_phone">{{'whatsapp phone'|translate}}</label>
+                  <input id="whatsapp_phone" type="text" class="form-control" formControlName="whatsapp_phone" name="whatsapp_phone" autofocus>
+                  <div  class="text-danger">
+
+                  </div>
+                </div>
+                <div class="form-group">
+                  <input class="form-control" type="file" accept="image/*" (change)="showPreview($event)" />
+
+                  <!-- Image Preview -->
+                  <div  class="imagePreview" *ngIf="imageEntityURL && imageEntityURL !== ''">
+                    <img style="width: 200px;height: 170px" class="img-thumbnail img-fluid img-profile-preview" [src]="imageEntityURL" height="170px" width="200px">
+                  </div>
+                  <ng-container *ngIf="imageEntityError != ''">
+                    <p class="text-danger small">
+                      {{'max file size error'|translate}}
+                    </p>
+                  </ng-container>
+
+                </div>
+
+                <div *ngIf="formError!=''" class="form-group text-danger">
+                  {{formError}}
+                </div>
+
+                <div class="form-group m-0">
+                  <button [disabled]="!formEntity.valid||loadingForm" type="submit" class="btn btn-primary btn-block">
+                    {{'save'|translate}}<img *ngIf="loadingForm"  class=" font-weight-bold ml-auto loader-min" src="assets/img/spinner.gif" />
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+        </div>
+      </ng-template>
+
+      <!-- template end entity -->
+
+      <!-- template activation -->
+      <ng-template #templateActivation>
+        <div class="modal-header login">
+          <img src="assets/img/lepoint.png" class="" style="width: 100px;height: 50px" />
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modalActivation.hide()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body bg-white ">
+          <alert *ngIf="alertStatus" type="info" [dismissOnTimeout]="5000">
+            <strong>{{alertMsg}}!</strong>
+          </alert>
+
+          <div class="card fat">
+            <div class="card-body">
+              <h4 class="card-title">{{'manage activation'|translate}}</h4>
+              <form  [formGroup]="formActivation" (ngSubmit)="addActivation()">
+                <div class="form-group">
+                  <label for="act_days">{{'days'|translate}} *</label>
+                  <input id="act_days" type="number" class="form-control" formControlName="days" name="days" required autofocus>
+                  <div  *ngIf="f4.days.invalid && f4.days.touched && f4.days.errors?.required" class="text-danger">
+                    {{'required field'|translate}}
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="act_amount">{{'amount'|translate}} </label>
+                  <input id="act_amount" type="number" class="form-control" formControlName="amount" name="amount" required/>
+
+                  <div *ngIf="f4.amount.invalid && f4.amount.touched && f4.amount.errors?.required" class="text-danger">
+                    {{'required field'|translate}}
+
+                  </div>
+                </div>
+
+
+                <div *ngIf="formActivationError!=''" class="form-group text-danger">
+                  {{formActivationError}}
+                </div>
+
+                <div class="form-group m-0">
+                  <button [disabled]="!formActivation.valid||loadingFormActivation" type="submit" class="btn btn-primary btn-block">
+                    {{'save'|translate}}<img alt="" *ngIf="loadingFormActivation"  class=" font-weight-bold ml-auto loader-min" src="assets/img/spinner.gif" />
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+        </div>
+      </ng-template>
+      <!-- template activation end -->
+
+
+    </div>
+    <app-footer></app-footer>
+  </div>
+</div>

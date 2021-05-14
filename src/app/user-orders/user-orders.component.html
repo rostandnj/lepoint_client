@@ -1,0 +1,155 @@
+<div class="fixed-bottom-bar">
+  <div class="osahan-home-page">
+    <div class="bg-primary p-2">
+      <app-header></app-header>
+
+    </div>
+
+
+    <div class="pl-2 pr-2">
+
+      <alert *ngIf="globalAlertStatus != ''" type="info" [dismissOnTimeout]="10000">
+        <strong>{{globalAlertStatus}}</strong>
+      </alert>
+
+
+      <div class="px-3 pb-3 title d-flex align-items-center background-qr row">
+
+        <img *ngIf="loading" class="pt-3 font-weight-bold ml-auto loader" src="assets/img/spinner.gif" />
+      </div>
+
+        <div class="d-flex row p-2"  *ngIf="userType != null">
+
+        <!-- Sidebar -->
+        <div class=" col-lg-3 col-md-3 col-sm-12" >
+          <div class="sidebar-heading">
+
+          </div>
+          <div class="list-group list-group-flush">
+            <button (click)="getOrders()" class=" btn btn-primary list-group-item list-group-item-action bg-light text-white mb-2">{{'orders'|translate}}</button>
+          </div>
+        </div>
+        <!-- /#sidebar-wrapper -->
+
+        <!-- Page Content -->
+
+        <div class="bg-white col-lg-9 col-md-9 col-sm-12">
+          <nav class="navbar navbar-expand-lg navbar-light ">
+            <h5 class="" >{{'orders'|translate}}</h5>
+          </nav>
+          <div class="container-fluid">
+
+            <div class="p-2 border-bottom menu-list" *ngFor="let order of orders">
+              <span class="float-right">
+
+                          <button class="btn btn-secondary btn-sm dropdown-toggle small small-btn" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Action
+                          </button>
+                          <div class="dropdown-menu dropdown-action">
+                           <button class="dropdown-item btn btn-link" (click)="showOrder(template, order)">{{'show'|translate}}</button>
+                           <button *ngIf="order.status ==0" class="dropdown-item btn btn-link" (click)="updateUserStatus(order, 10)"><i class="feather-check-circle"></i> {{'cancel'|translate}}</button>
+                          </div>
+
+                        </span>
+              <div class="media">
+                <img src="{{order.image}}" alt="" class="mr-3 rounded-pill ">
+                <div class="media-body">
+                  <h6 class="mb-1 small">{{order.reference}} <span *ngIf="order.status == 0" class=" mb-0 badge badge-danger text-white">{{'in progress'|translate}}</span>
+                    <span *ngIf="order.status == 1" class=" mb-0 badge badge-success text-white">{{'paid'|translate}}</span>
+                    <span *ngIf="order.status == 2" class=" mb-0 badge badge-success text-white">{{'delivered'|translate}}</span>
+                    <span *ngIf="order.status == 10" class=" mb-0 badge badge-warning text-white">{{'canceled'|translate}}</span></h6>
+                  <h6 class="mb-1 small" *ngIf="order.client">{{order.client.name}}  {{order.client.surname}} ( {{order.client.phone}} )</h6>
+                  <h6 class="mb-1 small" *ngIf="order.client === null">{{order.customer_name}} ( {{order.customer_phone}} )</h6>
+                  <p class="text-muted mb-0 font-weight-bold">{{order.entity.global_info.name}} - XAF {{order.amount}}</p>
+                  <p> <small>{{order.date}} </small>
+
+                  </p>
+                </div>
+              </div>
+            </div>
+
+
+          </div>
+
+        </div>
+        <!-- /#page-content-wrapper -->
+
+      </div>
+      <!-- /#wrapper -->
+
+      <ng-template #template>
+        <div class="modal-header login">
+          <img src="assets/img/lepoint.png" class="" style="width: 100px;height: 50px" />
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body bg-white ">
+          <alert *ngIf="globalAlertStatus != ''" type="info" [dismissOnTimeout]="5000">
+            <strong>{{globalAlertStatus}}!</strong>
+          </alert>
+
+          <div class="card fat">
+            <div class="card-body" style="padding: 0!important;">
+              <div class="p-1 osahan-cart-item">
+
+                <div class="shadow bg-white rounded p-3 clearfix">
+                  <img alt="osahan" style="width: 40px; height: 40px" src="{{openOrder.entity.global_info.image}}" class="mr-3 rounded-circle img-fluid">
+                  <div class="d-flex flex-column">
+                    <h6 class="mb-1 font-weight-bold">{{openOrder.entity.global_info.name}}</h6>
+                    <p class="mb-0 small text-muted"><i class="feather-map-pin"></i> {{openOrder.entity.location.city}}, {{openOrder.entity.location.street}}, {{openOrder.entity.location.street_detail}}</p>
+                    <p class="mb-0 small text-muted font-weight-bold">ref: {{openOrder.reference}}</p>
+
+                  </div>
+                  <div *ngIf="openOrder.entity.global_info.whatsapp_phone != null && openOrder.entity.global_info.whatsapp_phone != ''" class="row container-fluid mb-2">
+                    <p style="font-size: 14px; " class="font-weight-light text-dark m-0" >
+                      <img style="height: 15px;width: 15px" src="assets/img/whatsapp.png"/>
+                      <a style="color: black;font-size: 12px" target="_blank" href="https://api.whatsapp.com/send?phone{{openOrder.entity.global_info.whatsapp_phone.replace(' ', '') }}=&text=Hi"> {{openOrder.entity.global_info.whatsapp_phone}}</a>
+                    </p>
+                  </div>
+                  <div *ngIf="openOrder.entity.global_info.facebook_page != null && openOrder.entity.global_info.facebook_page != ''" class="row container-fluid mb-2">
+                    <p style="font-size: 14px; " class="font-weight-light text-dark m-0" >
+                      <img style="height: 15px;width: 15px" src="assets/img/facebook.png"/>
+                      <a style="color: black;font-size: 12px" target="_blank" href="{{ openOrder.entity.global_info.facebook_page.replace(' ', '') }}"> {{openOrder.entity.global_info.facebook_page.replace(' ', '')}}</a>
+                    </p>
+                  </div>
+                  <div *ngIf="openOrder.entity.global_info.website != null && openOrder.entity.global_info.website != ''" class="row container-fluid mb-2">
+                    <p style="font-size: 14px; " class="font-weight-light text-dark m-0" >
+                      <img style="height: 15px;width: 15px" src="assets/img/website.png"/>
+                      <a style="color: black;font-size: 12px" target="_blank" href="{{ openOrder.entity.global_info.website.replace(' ', '') }}"> {{openOrder.entity.global_info.website.replace(' ', '')}}</a>
+                    </p>
+                  </div>
+                  <div *ngFor="let it of openOrder.order_items" class="gold-members d-flex align-items-center justify-content-between  py-2 border-bottom">
+
+                    <div class="media align-items-center">
+                      <div class="mr-2 text-success">·</div>
+                      <div class="media-body">
+                        <p class="m-0">{{it.menu.name}}
+                        </p>
+                      </div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                      <span class="count-number float-right"><input class="count-number-input" type="text" readonly="" value="{{it.quantity}}"></span>
+                      <p class="text-gray mb-0 float-right ml-2 text-muted small">XAF {{it.menu.price}}</p>
+                    </div>
+                  </div>
+                  <p class="mb-1 font-weight-bold">{{'to pay'|translate}} <span class="float-right text-dark">XAF {{openOrder.amount}}</span></p>
+                  <hr>
+
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+      </ng-template>
+
+
+
+
+    </div>
+    <app-footer></app-footer>
+  </div>
+</div>

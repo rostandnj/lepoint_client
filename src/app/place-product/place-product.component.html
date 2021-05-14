@@ -1,0 +1,205 @@
+<div class="fixed-bottom-bar">
+  <div class="osahan-home-page">
+    <div class="bg-primary p-2">
+      <app-header></app-header>
+
+    </div>
+
+
+    <div class="bg-light home-list main-content">
+
+      <alert *ngIf="globalAlertStatus != ''" type="info" [dismissOnTimeout]="10000">
+        <strong>{{globalAlertStatus}}</strong>
+      </alert>
+
+
+
+
+
+      <div class="card p-3" style="border-top-style: none!important;border-radius: 0!important;border-right-style: none!important;border-left-style: none!important;" *ngIf="entity!== null">
+        <div class="px-3 pb-3 title d-flex align-items-center  row">
+          <img alt="" *ngIf="loading" class="pt-3 font-weight-bold  loader"  src="assets/img/spinner.gif" />
+          <a class="text-danger font-weight-bold ml-auto" routerLink="{{entity.link}}"><i class="feather-chevron-left"></i> {{'back'|translate}}</a>
+
+        </div>
+        <h5> <span class="feather-home"></span> {{entity.global_info.name}} </h5>
+        <div class="row container-fluid">
+          <p style="font-size: 14px; " class="font-weight-light text-dark m-0" > <span class="feather-phone-call"></span> <a style="color: black;font-size: 12px" href="tel:{{entity.global_info.phone1}}"> {{entity.global_info.phone1}}</a> <span *ngIf="entity.global_info.phone2 != ''"> - <a style="color: black;font-size: 12px" href="tel:{{entity.global_info.phone2}}">{{entity.global_info.phone2}}</a></span></p>
+        </div>
+        <div *ngIf="entity.global_info.whatsapp_phone != null && entity.global_info.whatsapp_phone != ''" class="row container-fluid mb-2">
+          <p style="font-size: 14px; " class="font-weight-light text-dark m-0" >
+            <img style="height: 15px;width: 15px" src="assets/img/whatsapp.png"/>
+            <a style="color: black;font-size: 12px" target="_blank" href="https://api.whatsapp.com/send?phone{{ entity.global_info.whatsapp_phone.replace(' ', '') }}=&text=Hi"> {{entity.global_info.whatsapp_phone}}</a>
+          </p>
+        </div>
+        <div *ngIf="entity.global_info.facebook_page != null && entity.global_info.facebook_page != ''" class="row container-fluid mb-2">
+          <p style="font-size: 14px; " class="font-weight-light text-dark m-0" >
+            <img style="height: 15px;width: 15px" src="assets/img/facebook.png"/>
+            <a style="color: black;font-size: 12px" target="_blank" href="{{ entity.global_info.facebook_page.replace(' ', '') }}"> {{entity.global_info.facebook_page.replace(' ', '')}}</a>
+          </p>
+        </div>
+        <div *ngIf="entity.global_info.website != null && entity.global_info.website != ''" class="row container-fluid mb-2">
+          <p style="font-size: 14px; " class="font-weight-light text-dark m-0" >
+            <img style="height: 15px;width: 15px" src="assets/img/website.png"/>
+            <a style="color: black;font-size: 12px" target="_blank" href="{{ entity.global_info.website.replace(' ', '') }}"> {{entity.global_info.website.replace(' ', '')}}</a>
+          </p>
+        </div>
+        <div class="row container-fluid mb-2">
+          <p style="font-size: 14px" class="font-weight-light text-dark m-0"> <span class="feather-map-pin"></span> {{entity.location.city}}, {{entity.location.street}}, {{entity.location.street_detail}}</p>
+
+        </div>
+
+        <div *ngIf="entity.flash_message !== ''" class=" row container-fluid">
+          <p class="flash-me">
+            {{entity.flash_message}}
+          </p>
+        </div>
+        <div class="row ">
+          <div class="col-lg-12 col-md-12" style="font-size: 12px">
+            <p>{{entity.global_info.description}}</p>
+
+          </div>
+
+
+        </div>
+
+      </div>
+
+      <div *ngIf="entity!== null" class="bg-light">
+
+
+        <div class="px-3 pr-4 row  pt-2 title d-flex align-items-center" >
+          <img alt="" *ngIf="loadingAll" class="mb-2 font-weight-bold loader"  src="assets/img/spinner.gif" />
+          <a (click)="showAll()" href="javascript:void(0)" style="cursor:pointer;font-size: 10px"  class="font-weight-bold ml-auto text-danger" >{{'show all'|translate}}</a>
+        </div>
+
+          <form class="row pl-4 pr-4"  [formGroup]="formSearch" (ngSubmit)="searchProduct()">
+            <div class="input-group mt-3 rounded shadow-sm overflow-hidden">
+
+              <input type="text" class="shadow-none border-0 form-control" placeholder="{{'search'|translate}}" formControlName="name" name="name"
+                     aria-label="" aria-describedby="basic-addon1">
+              <div class="input-group-append">
+                <button [disabled]="!formSearch.valid||loading" type="submit" class="border-0 btn btn-outline-secondary text-dark bg-white btn-block"><i
+                  class="feather-search"></i></button>
+              </div>
+            </div>
+
+          </form>
+
+
+
+
+        <div class="mt-4" style="min-height: 350px">
+          <ngx-slick-carousel class="carousel cat-slider"
+                              #slickModal2="slick-carousel"
+                              [config]="slideConfig2">
+            <div ngxSlickItem *ngFor="let product of productsToShow " class="osahan-slider-item py-3 px-1">
+              <div class="list-card bg-white h-100 rounded overflow-hidden position-relative shadow-sm">
+                <div class="list-card-image">
+                  <a >
+                    <img src="{{product.image}}" class="img-fluid item-img w-100">
+
+                  </a>
+                </div>
+                <div class="p-2 position-relative">
+                  <div class="list-card-body">
+                    <h6 class="mb-1"><a class="text-black" style="font-size: 12px">{{product.name}} <span class="badge badge-success " *ngIf="product.is_available"><i class="feather-check-circle badge-success"></i></span>
+                    </a>
+                    </h6>
+
+                    <p class="text-gray mb-3 time"> <span class="float-right text-black-50"> XAF {{product.price}}</span>
+                    </p>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </ngx-slick-carousel>
+          <small *ngIf="!loading&&!loadingAll&&products.length==0" class="container text-center">{{'nothing found'|translate}}</small>
+        </div>
+
+
+        <div *ngIf="ads.length>0" class="p-3 title d-flex align-items-center">
+          <h5 class="m-0 ">{{'advertisement'|translate}}</h5>
+        </div>
+        <div  class="p-2 m-2 border-bottom menu-list" *ngFor="let ad of ads" [style]="{'background-color': ad.status === true ? '#28a7450d':'white'}" >
+          <div class="media">
+            <img style="cursor:pointer "  (click)="openModalAdvert(ad, templateAdvert)" *ngIf="ad.file != null && showExtensions.includes(ad.file.extension)" src="{{ad.file.path}}" alt="" class="mr-3 rounded-pill " [ngClass]="{'img-thumbnail-main': !ad.status}">
+            <div  style="cursor:pointer "  (click)="openModalAdvert(ad, templateAdvert)" class="media-body">
+              <h6  class="mb-1">{{ad.title}}
+              </h6>
+              <p class="text-muted mb-0" style="font-size: 11px">{{ad.content.slice(0,100)}}... </p>
+              <p><a style="font-size: 11px" target="_blank" class="text-danger font-weight-bold ml-auto" href="{{configLinkAdvert}}?slug={{ad.slug}}"><i class="feather-download"></i>qr-code</a></p>
+              <p style="font-size: 11px;font-weight: 500;" class="text-muted mb-0">{{ad.date.split(' ')[0]}} </p>
+            </div>
+          </div>
+        </div>
+
+        <div  class="row m-2" *ngIf="canLoadMoreAdvert"  >
+          <button (click)="getMoreAdvert()"  class="btn btn-primary btn-sm">
+            {{'load more'|translate}}<img *ngIf="loading"  class=" font-weight-bold ml-auto loader-min" src="assets/img/spinner.gif" />
+          </button>
+        </div>
+      </div>
+    </div>
+
+
+    <ng-template #templateAdvert>
+      <div class="modal-header login">
+        <img src="{{getImageTemplate()}}" class="" style="width: 100px;height: 50px" />
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modalAdvert.hide()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body bg-white " *ngIf="openAdvert != null && entity != null">
+        <alert *ngIf="globalAlertStatus != ''" type="info" [dismissOnTimeout]="5000">
+          <strong>{{globalAlertStatus}}!</strong>
+        </alert>
+        <h5> <span class="feather-home"></span> {{entity.global_info.name}}  </h5>
+        <div class="row container-fluid">
+          <p style="font-size: 14px; " class="font-weight-light text-dark m-0" > <span class="feather-phone-call"></span> <a style="color: black;font-size: 12px" href="tel:{{entity.global_info.phone1}}"> {{entity.global_info.phone1}}</a> <span *ngIf="entity.global_info.phone2 != ''"> - <a style="color: black;font-size: 12px" href="tel:{{entity.global_info.phone2}}">{{entity.global_info.phone2}}</a></span></p>
+        </div>
+        <div *ngIf="entity.global_info.whatsapp_phone != null && entity.global_info.whatsapp_phone != ''" class="row container-fluid mb-2">
+          <p style="font-size: 14px; " class="font-weight-light text-dark m-0" >
+            <img style="height: 15px;width: 15px" src="assets/img/whatsapp.png"/>
+            <a style="color: black;font-size: 12px" target="_blank" href="https://api.whatsapp.com/send?phone{{ entity.global_info.whatsapp_phone.replace(' ', '') }}=&text=Hi"> {{entity.global_info.whatsapp_phone}}</a>
+          </p>
+        </div>
+        <div *ngIf="entity.global_info.facebook_page != null && entity.global_info.facebook_page != ''" class="row container-fluid mb-2">
+          <p style="font-size: 14px; " class="font-weight-light text-dark m-0" >
+            <img style="height: 15px;width: 15px" src="assets/img/facebook.png"/>
+            <a style="color: black;font-size: 12px" target="_blank" href="{{ entity.global_info.facebook_page.replace(' ', '') }}"> {{entity.global_info.facebook_page.replace(' ', '')}}</a>
+          </p>
+        </div>
+        <div *ngIf="entity.global_info.website != null && entity.global_info.website != ''" class="row container-fluid mb-2">
+          <p style="font-size: 14px; " class="font-weight-light text-dark m-0" >
+            <img style="height: 15px;width: 15px" src="assets/img/website.png"/>
+            <a style="color: black;font-size: 12px" target="_blank" href="{{ entity.global_info.website.replace(' ', '') }}"> {{entity.global_info.website.replace(' ', '')}}</a>
+          </p>
+        </div>
+
+        <div class="row container-fluid mb-2">
+          <p style="font-size: 14px" class="font-weight-light text-dark m-0"> <span class="feather-map-pin"></span> {{entity.location.city}}, {{entity.location.street}}, {{entity.location.street_detail}}</p>
+
+        </div>
+        <h6>{{openAdvert.title}}</h6>
+        <em>{{openAdvert.date.split(' ')[0]}}</em>
+
+        <div class="card fat">
+          <img class="card-img-top" *ngIf="openAdvert.file != null && showExtensions.includes(openAdvert.file.extension)" src="{{openAdvert.file.path}}" alt="{{openAdvert.title}}">
+          <div class="card-body" style="padding: 0!important;">
+            <div class="card-text container-fluid">{{openAdvert.content}}</div>
+            <p>
+              <a *ngIf="openAdvert.file != null" style="font-size: 11px" target="_blank" class="text-danger font-weight-bold ml-auto" href="{{openAdvert.file.path}}"><i class="feather-download"></i> {{'download'|translate}}</a>
+            </p>
+
+          </div>
+        </div>
+
+      </div>
+
+    </ng-template>
+
+    <app-footer></app-footer>
+  </div>
+</div>

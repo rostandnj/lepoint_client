@@ -1,0 +1,31 @@
+.block{
+
+
+}
+.flash-me {
+  color: #dc3545!important;
+  font-size:14px;
+  -webkit-animation: flash linear 3s infinite;
+  animation: flash linear 4s infinite;
+}
+
+@-webkit-keyframes flash {
+  0% { opacity: 0; }
+  80% { opacity: 1; color:#fff; }
+  83% { opacity: 0; color:#fff; }
+  86% { opacity: 1; color:#fff;}
+  89% { opacity: 0}
+  92% { opacity: 1; color:#fff;}
+  95% { opacity: 0; color:#fff;}
+  100% { opacity: 1; color:#fff;}
+}
+@keyframes flash {
+  0% { opacity: 0; }
+  80% { opacity: 1; color:#fff; }
+  83% { opacity: 0; color:#fff; }
+  86% { opacity: 1; color:#fff;}
+  89% { opacity: 0}
+  92% { opacity: 1; color:#fff;}
+  95% { opacity: 0; color:#fff;}
+  100% { opacity: 1; color:#fff;}
+}

@@ -1,0 +1,777 @@
+<div class="fixed-bottom-bar">
+  <div class="osahan-home-page">
+    <div class="bg-primary p-2">
+      <app-header></app-header>
+
+    </div>
+
+
+    <div class=" container-fluid main-content">
+
+      <alert *ngIf="globalAlertStatus != ''" type="info" [dismissOnTimeout]="10000">
+        <strong>{{globalAlertStatus}}</strong>
+      </alert>
+
+      <div class="px-3  title d-flex align-items-center background-qr row" style="min-height: 50px">
+
+        <em *ngIf="userType != 0 && !loading" class="m-0 pt-3">{{'page denied'|translate}} </em>
+        <img *ngIf="loading" class="pt-3 font-weight-bold ml-auto loader" src="assets/img/spinner.gif" />
+      </div>
+
+      <div class="d-flex row"  *ngIf="userType != null && userType == 0">
+
+        <!-- Sidebar -->
+        <div class="col-lg-3 col-md-3 col-sm-12" >
+          <div class="sidebar-heading">
+            <h6 class="m-0 pt-2 mb-2">{{'manage system'|translate}} </h6>
+          </div>
+          <div class="list-group list-group-flush">
+            <label style="margin-bottom: -10px;margin-top: 10px" class="" for="selected-entity"><h6 style="font-size: 13px">{{'entity'|translate}}</h6></label>
+            <select [(ngModel)]="choosenEntity" (change)="chooseEntity()" class="custom-select my-1 mr-sm-2" id="selected-entity">
+              <option selected disabled value="">{{'choose'|translate}}...</option>
+              <option *ngFor="let elt of entityListName " value="{{elt.value}}">{{elt.title|translate}}</option>
+            </select>
+             <button (click)="getUsers()" class=" btn btn-primary list-group-item list-group-item-action bg-light text-white">{{'users'|translate}}</button>
+             <button (click)="getManagers()" class="mt-2 btn btn-primary list-group-item list-group-item-action bg-light text-white">{{'manager'|translate}}</button>
+             <button (click)="getTopManagers()" class="mt-2 btn btn-primary list-group-item list-group-item-action bg-light text-white">{{'top manager'|translate}}</button>
+             <button (click)="getOrders()" class=" mt-2 btn btn-primary list-group-item list-group-item-action bg-light text-white">{{'orders'|translate}}</button>
+             <button (click)="getNightPharmacy()" class=" mt-2 btn btn-primary list-group-item list-group-item-action bg-light text-white">{{'night pharmacy'|translate}}</button>
+
+          </div>
+        </div>
+        <!-- /#sidebar-wrapper -->
+
+        <!-- Page Content -->
+        <div class="col-lg-9 col-md-9 col-sm-12 mt-2">
+          <div class="card bg-white ">
+
+            <nav class="card-header navbar navbar-expand-lg navbar-light bg-white mb-1 ">
+              <h5 class="mt-4" *ngIf="choosenEntity != ''">{{choosenEntityName|translate}}</h5>
+              <h5 class="mt-4" *ngIf="choosenEntity == '' && activeDashboard == 'users'">{{'users'|translate}}</h5>
+              <h5 class="mt-4" *ngIf="choosenEntity == '' && activeDashboard == 'managers'">{{'manager'|translate}}</h5>
+              <h5 class="mt-4" *ngIf="choosenEntity == '' && activeDashboard == 'top_managers'">{{'top manager'|translate}}</h5>
+              <h5 class="mt-4" *ngIf="choosenEntity == '' && activeDashboard == 'orders'">{{'orders'|translate}} </h5>
+              <h5 class="mt-4" *ngIf="choosenEntity == '' && activeDashboard == 'night_pharmacy'">{{'night pharmacy'|translate}}  <a style="font-size: 11px" target="_blank" class="text-danger font-weight-bold ml-auto" href="{{configLinkPharmacy}}"><i class="feather-download"></i>qr-code</a> </h5>
+              <button *ngIf="choosenEntity != ''" class="btn btn-primary ml-auto" id="menu-toggle" (click)="openModal(template)">{{'register entity'|translate}}</button>
+              <button *ngIf="choosenEntity == '' && activeDashboard == 'top_managers'" class="btn btn-primary ml-auto"  (click)="openModalTopManager(templateTopManager)">{{'register entity'|translate}}</button>
+              <button *ngIf="choosenEntity == '' && activeDashboard == 'managers'" class="btn btn-primary ml-auto" (click)="openModalNewManager(templateNewManager)" >{{'register entity'|translate}}</button>
+              <button *ngIf="choosenEntity == '' && activeDashboard == 'night_pharmacy'" class="btn btn-primary ml-auto" (click)="openModalNightPharmacy(templateNewNightPharmacy)" >{{'add'|translate}}</button>
+            </nav>
+
+            <!-- manage user start -->
+            <div class="card-body" *ngIf="choosenEntity == '' && activeDashboard == 'users'">
+              <div class="p-2 border-bottom menu-list" *ngFor="let user of users" [style]="{'background-color': user.type === 10 ? '#fff0f2':'white'}" >
+                        <span class="float-right">
+
+                          <button class="btn btn-secondary btn-sm dropdown-toggle small small-btn" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Action
+                          </button>
+                          <div class="dropdown-menu dropdown-action" style="width: 100px">
+                           <a (click)="changeUserStatus(user.id)" *ngIf="user.is_close == 1" class="dropdown-item" href="javascript:void(0)">{{'enable'|translate}}</a>
+                           <a (click)="changeUserStatus(user.id)" *ngIf="user.is_close == 0" class="dropdown-item" href="javascript:void(0)">{{'disable'|translate}}</a>
+                          </div>
+
+                        </span>
+                <div class="media">
+                  <img src="{{user.picture}}" alt="" class="mr-3 rounded-pill ">
+                  <div class="media-body">
+                    <h6 class="mb-1">{{user.name}} {{user.surname}}
+                    </h6>
+                    <p class="text-muted mb-0"><i class="feather-at-sign"></i>{{user.email}}</p>
+                    <p class="text-muted mb-0"><i class="feather-phone"></i>{{user.phone}}</p>
+                    <p *ngIf="user.type === 10" class="text-muted mb-0 font-weight-bold"><i class="feather-user"></i>{{'account owner'|translate}}</p>
+                    <p *ngIf="user.type === 1" class="text-muted mb-0 font-weight-bold"><i class="feather-user"></i>{{'account top manager'|translate}}</p>
+                    <p *ngIf="user.type === 11" class="text-muted mb-0 font-weight-bold"><i class="feather-user"></i>{{'account manager'|translate}}</p>
+                    <p *ngIf="user.type === 20" class="text-muted mb-0 font-weight-bold"><i class="feather-user"></i>{{'account client'|translate}}</p>
+                  </div>
+                </div>
+              </div>
+
+              <button (click)="getUsersMore()" *ngIf="canLoadMore" class="btn btn-primary btn-block">
+                {{'load more'|translate}}<img *ngIf="loadingMore"  class=" font-weight-bold ml-auto loader-min" src="assets/img/spinner.gif" />
+              </button>
+              <div *ngIf="!loading&&users.length==0" class="row container-fluid justify-content-center align-self-center">
+                <em style="margin-top: 100px"  class="">{{'users not available'|translate}} </em>
+              </div>
+
+
+            </div>
+
+            <!-- manage user end -->
+
+            <!-- manage manager start -->
+            <div class="card-body" *ngIf="choosenEntity == '' && activeDashboard == 'managers'">
+              <div class="p-2 border-bottom menu-list" *ngFor="let user of managers" [style]="{'background-color': user.type === 10 ? '#fff0f2':'white'}" >
+                        <span class="float-right">
+
+                          <button class="btn btn-secondary btn-sm dropdown-toggle small small-btn" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Action
+                          </button>
+                          <div class="dropdown-menu dropdown-action" style="width: 100px">
+                           <a (click)="changeUserStatus(user.id)" *ngIf="user.is_close == 1" class="dropdown-item" href="javascript:void(0)">{{'enable'|translate}}</a>
+                           <a (click)="changeUserStatus(user.id)" *ngIf="user.is_close == 0" class="dropdown-item" href="javascript:void(0)">{{'disable'|translate}}</a>
+                          </div>
+
+                        </span>
+                <div class="media">
+                  <img src="{{user.picture}}" alt="" class="mr-3 rounded-pill ">
+                  <div class="media-body">
+                    <h6 class="mb-1">{{user.name}} {{user.surname}}
+                    </h6>
+                    <p class="text-muted mb-0"><i class="feather-at-sign"></i>{{user.email}}</p>
+                    <p class="text-muted mb-0"><i class="feather-phone"></i>{{user.phone}}</p>
+                    <p *ngIf="user.type === 10" class="text-muted mb-0 font-weight-bold"><i class="feather-user"></i>{{'account owner'|translate}}</p>
+                    <p *ngIf="user.type === 1" class="text-muted mb-0 font-weight-bold"><i class="feather-user"></i>{{'account top manager'|translate}}</p>
+                    <p *ngIf="user.type === 11" class="text-muted mb-0 font-weight-bold"><i class="feather-user"></i>{{'account manager'|translate}}</p>
+                    <p *ngIf="user.type === 20" class="text-muted mb-0 font-weight-bold"><i class="feather-user"></i>{{'account client'|translate}}</p>
+                  </div>
+                </div>
+              </div>
+
+              <button (click)="getManagersMore()" *ngIf="canLoadMore" class="btn btn-primary btn-block">
+                {{'load more'|translate}}<img *ngIf="loadingMore"  class=" font-weight-bold ml-auto loader-min" src="assets/img/spinner.gif" />
+              </button>
+              <div *ngIf="!loading&&managers.length==0" class="row container-fluid justify-content-center align-self-center">
+                <em style="margin-top: 100px"  class="">{{'users not available'|translate}} </em>
+              </div>
+
+
+            </div>
+
+            <!-- manage manager end -->
+
+            <!-- manage top_manager start -->
+            <div class="card-body" *ngIf="choosenEntity == '' && activeDashboard == 'top_managers'">
+              <div class="p-2 border-bottom menu-list" *ngFor="let user of topManagers" [style]="{'background-color': user.type === 10 ? '#fff0f2':'white'}" >
+                        <span class="float-right">
+
+                          <button class="btn btn-secondary btn-sm dropdown-toggle small small-btn" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Action
+                          </button>
+                          <div class="dropdown-menu dropdown-action" style="width: 100px">
+                           <a (click)="changeUserStatus(user.id)" *ngIf="user.is_close == 1" class="dropdown-item" href="javascript:void(0)">{{'enable'|translate}}</a>
+                           <a (click)="changeUserStatus(user.id)" *ngIf="user.is_close == 0" class="dropdown-item" href="javascript:void(0)">{{'disable'|translate}}</a>
+                          </div>
+
+                        </span>
+                <div class="media">
+                  <img src="{{user.picture}}" alt="" class="mr-3 rounded-pill ">
+                  <div class="media-body">
+                    <h6 class="mb-1">{{user.name}} {{user.surname}}
+                    </h6>
+                    <p class="text-muted mb-0"><i class="feather-at-sign"></i>{{user.email}}</p>
+                    <p class="text-muted mb-0"><i class="feather-phone"></i>{{user.phone}}</p>
+                    <p *ngIf="user.type === 10" class="text-muted mb-0 font-weight-bold"><i class="feather-user"></i>{{'account owner'|translate}}</p>
+                    <p *ngIf="user.type === 1" class="text-muted mb-0 font-weight-bold"><i class="feather-user"></i>{{'account top manager'|translate}}</p>
+                    <p *ngIf="user.type === 11" class="text-muted mb-0 font-weight-bold"><i class="feather-user"></i>{{'account manager'|translate}}</p>
+                    <p *ngIf="user.type === 20" class="text-muted mb-0 font-weight-bold"><i class="feather-user"></i>{{'account client'|translate}}</p>
+                  </div>
+                </div>
+              </div>
+
+              <button (click)="getTopManagersMore()" *ngIf="canLoadMore" class="btn btn-primary btn-block">
+                {{'load more'|translate}}<img *ngIf="loadingMore"  class=" font-weight-bold ml-auto loader-min" src="assets/img/spinner.gif" />
+              </button>
+              <div *ngIf="!loading&&topManagers.length==0" class="row container-fluid justify-content-center align-self-center">
+                <em style="margin-top: 100px"  class="">{{'users not available'|translate}} </em>
+              </div>
+
+
+            </div>
+
+            <!-- manage top_manager end -->
+
+            <!-- manage orders start -->
+            <div class="card-body" *ngIf="choosenEntity == '' && activeDashboard == 'orders'">
+              <div class="p-2 border-bottom menu-list" *ngFor="let order of orders">
+              <span class="float-right">
+
+                          <button  class="btn btn-secondary btn-sm small small-btn" type="button" >
+                            {{'show'|translate}}
+                          </button>
+
+                        </span>
+                <div class="media">
+                  <img src="{{order.image}}" alt="" class="mr-3 rounded-pill ">
+                  <div class="media-body">
+                    <h6 class="mb-1 small">{{order.reference}} <span *ngIf="order.status == 0" class=" mb-0 badge badge-danger text-white">{{'in progress'|translate}}</span>
+                      <span *ngIf="order.status == 1" class=" mb-0 badge badge-success text-white">{{'paid'|translate}}</span>
+                      <span *ngIf="order.status == 2" class=" mb-0 badge badge-success text-white">{{'delivered'|translate}}</span>
+                      <span *ngIf="order.status == 10" class=" mb-0 badge badge-warning text-white">{{'canceled'|translate}}</span></h6>
+                    <h6 class="mb-1 small" *ngIf="order.client">{{order.client.name}}  {{order.client.surname}} ( {{order.client.phone}} )</h6>
+                    <h6 class="mb-1 small" *ngIf="order.client === null">{{order.customer_name}} ( {{order.customer_phone}} )</h6>
+                    <p class="text-muted mb-0 font-weight-bold">{{order.entity.global_info.name}} - XAF {{order.amount}}</p>
+                    <p> <small>{{order.date}} </small>
+
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <button (click)="getOrdersMore()" *ngIf="canLoadMore" class="btn btn-primary btn-block">
+                {{'load more'|translate}}<img *ngIf="loadingMore"  class=" font-weight-bold ml-auto loader-min" src="assets/img/spinner.gif" />
+              </button>
+              <div *ngIf="!loading&&orders.length==0" class="row container-fluid justify-content-center align-self-center">
+                <em style="margin-top: 100px"  class="">{{'entity not available'|translate}} </em>
+              </div>
+
+            </div>
+            <!-- manage orders end -->
+
+            <!-- manage entity start -->
+            <div class="card-body">
+              <div class="p-2 border-bottom gold-members" *ngFor="let ent of entities">
+                        <span class="float-right">
+
+                          <button class="btn btn-secondary btn-sm dropdown-toggle small small-btn" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Action
+                          </button>
+                          <div class="dropdown-menu dropdown-action">
+                             <a class="dropdown-item btn btn-link" routerLink="/manage/entity/{{ent.global_info.slug}}-{{ent.id}}" ><span class="feather-settings"></span> {{'manage'|translate}}</a>
+                             <button *ngIf="ent.status === true && userType == 0" class="dropdown-item btn btn-link" (click)="changeEntityStatus(ent, 0)" ><span class="feather-lock"></span> {{'lock'|translate}}</button>
+                             <button *ngIf="ent.status === false && userType == 0" class="dropdown-item btn btn-link" (click)="changeEntityStatus(ent, 1)" ><span class="feather-unlock"></span> {{'unlock'|translate}}</button>
+                           <button class="dropdown-item btn btn-link" (click)="openModalActivation(templateActivation, ent)" >{{'activation'|translate}}</button>
+                           <button *ngIf="[1,2,3].includes(number(ent.type))" class="dropdown-item btn btn-link" (click)="changeCanOrder(ent.id)" >
+                             <span *ngIf="ent.can_order === true" class="feather-x-circle"></span>
+                             <span *ngIf="ent.can_order === false" class="feather-check-circle"></span> {{'use order system'|translate}}
+                           </button>
+
+                          </div>
+
+                        </span>
+                <div class="media">
+                  <div [ngClass]="{'text-danger': !ent.status, 'text-success': ent.status}" class="mr-3 font-weight-bold non_veg">
+                    <span style="font-size: 10px" [ngClass]="{'feather-check': ent.status == true, 'feather-x': ent.status == false}"></span>
+                  </div>
+                  <div class="media-body">
+                    <h6 class="mb-1">{{ent.global_info.name}}</h6>
+                    <p class="text-muted mb-0 small">{{ent.location.city}}, {{ent.location.street}}</p>
+                    <p class=" mb-0 small"> <span   class="badge badge-light text-white" [ngStyle]="{'background-color':ent.entity_activation.is_valid == true?'green':'red','font-size': '8px'}"  >{{'valide up to'|translate}} {{ent.entity_activation.end_date}}</span> </p>
+                    <a target="_blank" class="text-dark font-weight-bold ml-auto" href="{{configLink}}?id={{ent.id}}"><i class="feather-download"></i>qr-code</a>
+
+                  </div>
+                </div>
+              </div>
+              <button (click)="getEntitiesMore()" *ngIf="canLoadMore" class="btn btn-primary btn-block">
+                {{'load more'|translate}}<img *ngIf="loadingMore"  class=" font-weight-bold ml-auto loader-min" src="assets/img/spinner.gif" />
+              </button>
+
+            </div>
+            <!-- manage entity end -->
+
+            <!-- manage night pharmacy start -->
+            <div class="card-body" *ngIf="choosenEntity == '' && activeDashboard == 'night_pharmacy'">
+
+              <div class="p-2 border-bottom menu-list" *ngFor="let phar of nightPharmacies">
+              <span class="float-right">
+
+                          <button class="btn btn-secondary btn-sm dropdown-toggle small small-btn" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Action
+                          </button>
+                          <div class="dropdown-menu dropdown-action" style="width: 100px">
+                           <a (click)="openModalEditNightPharmacy(templateEditNightPharmacy, phar)"  class="dropdown-item" href="javascript:void(0)">{{'edit'|translate}}</a>
+                           <a (click)="deleteNightPharmacy(phar.id)" class="dropdown-item" href="javascript:void(0)">{{'remove'|translate}}</a>
+                          </div>
+                        </span>
+                <div class="media">
+                  <img src="assets/base-image/phar.png" alt="" class="mr-3 rounded-pill ">
+                  <div class="media-body">
+                    <h6 class="mb-1 small">{{phar.name}}</h6>
+                    <p> {{'last publication'|translate}} <small>{{phar.write_date}} </small>
+
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="!loading&&nightPharmacies.length==0" class="row container-fluid justify-content-center align-self-center">
+                <em style="margin-top: 100px"  class="">{{'entity not available'|translate}} </em>
+              </div>
+
+
+
+            </div>
+            <!-- manage night pharmacy end -->
+
+          </div>
+        </div>
+
+
+
+      </div>
+      <!-- /#wrapper -->
+
+
+
+
+    <!-- template topManager -->
+      <ng-template #templateTopManager>
+        <div class="modal-header login">
+          <img src="assets/img/lepoint.png" class="" style="width: 100px;height: 50px" />
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modalTopManager.hide()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body bg-white ">
+          <alert *ngIf="alertStatus" type="info" [dismissOnTimeout]="5000">
+            <strong>{{alertMsg}}!</strong>
+          </alert>
+
+          <div class="card fat">
+            <div class="card-body">
+              <h4 class="card-title">{{'add top manager'|translate}}</h4>
+              <form  [formGroup]="formTopManager" (ngSubmit)="addTopManager()">
+                <div class="form-group">
+                  <label for="user_name">{{'name'|translate}}</label>
+                  <input id="user_name" type="text" class="form-control" formControlName="user_name" name="user_name" required autofocus>
+                  <div  *ngIf="f6.user_name.invalid && f6.user_name.touched && f6.user_name.errors?.minlength" class="text-danger">
+                    {{'name error'|translate}}
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="reg_surname">{{'surname'|translate}}</label>
+                  <input id="reg_surname" type="text" class="form-control" formControlName="user_surname" name="user_surname" autofocus>
+                  <div class="text-danger">
+
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="reg_email">{{'email'|translate}}</label>
+                  <input id="reg_email" type="email" class="form-control" formControlName="user_email" name="user_email" required>
+                  <div *ngIf="f6.user_email.invalid && f6.user_email.touched && f6.user_email.errors?.email" class="text-danger">
+                    {{'email error'|translate}}
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="reg_phone">{{'phone'|translate}}</label>
+                  <input id="reg_phone" type="text" class="form-control" formControlName="user_phone" name="user_phone" required autofocus>
+                  <div *ngIf="f6.user_phone.invalid && f6.user_phone.touched && f6.user_phone.errors?.pattern" class="text-danger">
+                    {{'phone error'|translate}}
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="reg_gender">{{'gender'|translate}}</label>
+                  <select id="reg_gender" class="form-control" formControlName="user_gender" name="user_gender" required>
+                    <option value="1">{{'man'|translate}}</option>
+                    <option value="0">{{'woman'|translate}}</option>
+                  </select>
+                  <div class="text-danger">
+
+                  </div>
+                </div>
+
+
+                <div *ngIf="formTopManagerError!=''" class="form-group text-danger">
+                  {{formTopManagerError}}
+                </div>
+
+                <div class="form-group m-0">
+                  <button [disabled]="!formTopManager.valid||loadingFormTopManager" type="submit" class="btn btn-primary btn-block">
+                    {{'save'|translate}}<img alt="" *ngIf="loadingFormTopManager"  class=" font-weight-bold ml-auto loader-min" src="assets/img/spinner.gif" />
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+        </div>
+      </ng-template>
+      <!-- template end topManager -->
+
+      <!-- template manager -->
+
+      <ng-template #templateNewManager>
+        <div class="modal-header login">
+          <img src="assets/img/lepoint.png" class="" style="width: 100px;height: 50px" />
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modalNewManager.hide()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body bg-white ">
+          <alert *ngIf="alertStatus" type="info" [dismissOnTimeout]="5000">
+            <strong>{{alertMsg}}!</strong>
+          </alert>
+
+          <div class="card fat">
+            <div class="card-body">
+              <h4 class="card-title">{{'add manager'|translate}}</h4>
+              <form  [formGroup]="formNewManager" (ngSubmit)="addNewManager()">
+                <div class="form-group">
+                  <label for="user_name1">{{'name'|translate}}</label>
+                  <input id="user_name1" type="text" class="form-control" formControlName="user_name" name="user_name" required autofocus>
+                  <div  *ngIf="f7.user_name.invalid && f7.user_name.touched && f7.user_name.errors?.minlength" class="text-danger">
+                    {{'name error'|translate}}
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="reg_surname1">{{'surname'|translate}}</label>
+                  <input id="reg_surname1" type="text" class="form-control" formControlName="user_surname" name="user_surname" autofocus>
+                  <div class="text-danger">
+
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="reg_email1">{{'email'|translate}}</label>
+                  <input id="reg_email1" type="email" class="form-control" formControlName="user_email" name="user_email" required>
+                  <div *ngIf="f7.user_email.invalid && f7.user_email.touched && f7.user_email.errors?.email" class="text-danger">
+                    {{'email error'|translate}}
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="reg_phone1">{{'phone'|translate}}</label>
+                  <input id="reg_phone1" type="text" class="form-control" formControlName="user_phone" name="user_phone" required autofocus>
+                  <div *ngIf="f7.user_phone.invalid && f7.user_phone.touched && f7.user_phone.errors?.pattern" class="text-danger">
+                    {{'phone error'|translate}}
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="reg_gender1">{{'gender'|translate}}</label>
+                  <select id="reg_gender1" class="form-control" formControlName="user_gender" name="user_gender" required>
+                    <option value="1">{{'man'|translate}}</option>
+                    <option value="0">{{'woman'|translate}}</option>
+                  </select>
+                  <div class="text-danger">
+
+                  </div>
+                </div>
+
+
+                <div *ngIf="formNewManagerError!=''" class="form-group text-danger">
+                  {{formNewManagerError}}
+                </div>
+
+                <div class="form-group m-0">
+                  <button [disabled]="!formNewManager.valid||loadingFormNewManager" type="submit" class="btn btn-primary btn-block">
+                    {{'save'|translate}}<img alt="" *ngIf="loadingFormNewManager"  class=" font-weight-bold ml-auto loader-min" src="assets/img/spinner.gif" />
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+        </div>
+      </ng-template>
+      <!-- template end manager -->
+
+      <!-- template entity -->
+      <ng-template #template>
+        <div class="modal-header login">
+          <img src="assets/img/lepoint.png" class="" style="width: 100px;height: 50px" />
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body bg-white ">
+          <alert *ngIf="alertStatus" type="info" [dismissOnTimeout]="5000">
+            <strong>{{alertMsg}}!</strong>
+          </alert>
+
+          <div class="card fat">
+            <div class="card-body">
+              <h4 class="card-title">{{choosenEntityName|translate}}</h4>
+              <form  [formGroup]="formEntity" (ngSubmit)="resgisterEntity()">
+                <div class="form-group">
+                  <label for="reg_name">{{'name'|translate}} *</label>
+                  <input id="reg_name" type="text" class="form-control" formControlName="name" name="name" required autofocus>
+                  <div  *ngIf="f1.name.invalid && f1.name.touched && f1.name.errors?.minlength" class="text-danger">
+                    {{'name error'|translate}}
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="reg_description">{{'description'|translate}} *</label>
+                  <textarea  id="reg_description" class="form-control" formControlName="description" name="description"></textarea>
+                  <div *ngIf="f1.description.invalid && f1.description.touched && f1.description.errors?.minlength"  class="text-danger">
+                    {{'description error'|translate}}
+                  </div>
+                </div>
+                <div class="form-group" *ngIf="showCategoryMenu">
+                  <label for="base_categories">{{'categories'|translate}} <em style="font-size: 9px">{{'category helper'|translate}}</em> *</label>
+                  <select multiple id="base_categories" class="form-control" formControlName="base_categories" name="base_categories" required>
+                    <ng-container *ngFor="let cat of baseCategoriesToShow">
+                      <option *ngIf="currentLang == 'fr'"  value="{{cat.id}}">{{cat.name_fr}} </option>
+                      <option *ngIf="currentLang == 'en'"  value="{{cat.id}}">{{cat.name_en}} </option>
+                    </ng-container>
+                  </select>
+                  <div *ngIf="f1.base_categories.invalid && f1.base_categories.touched && f1.base_categories.errors?.required" class="text-danger">
+                    {{'required field'|translate}}
+
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="country_id">{{'country'|translate}} *</label>
+                  <select id="country_id" class="form-control" formControlName="country_id" name="country_id" required>
+                    <option value="cm" selected>Cameroun</option>
+                  </select>
+                  <div class="text-danger">
+
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="city">{{'city'|translate}} *</label>
+                  <select id="city" class="form-control" formControlName="city" name="city" required>
+                    <option *ngFor="let city of cities" value="{{city.name}}">{{city.name}} </option>
+                  </select>
+                  <div class="text-danger">
+
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="street">{{'street'|translate}} *</label>
+                  <input id="street" type="text" class="form-control" formControlName="street" name="street" required autofocus>
+                  <div  *ngIf="f1.street.invalid && f1.street.touched && f1.street.errors?.minlength" class="text-danger">
+                    {{'name error'|translate}}
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="street_detail">{{'street_detail'|translate}}</label>
+                  <input id="street_detail" type="text" class="form-control" formControlName="street_detail" name="street_detail" autofocus>
+                </div>
+
+                <div class="form-group">
+                  <label for="phone1">{{'phone'|translate}} 1 *</label>
+                  <input id="phone1" type="text" class="form-control" formControlName="phone1" name="phone1" required>
+
+                  <div *ngIf="f1.phone1.invalid && f1.phone1.touched" class="text-danger">
+                    <p class="text-danger small" *ngIf="f1.phone1.errors?.required">
+                      {{'required field'|translate}}
+                    </p>
+                    <p class="text-danger small" *ngIf="f1.phone1.errors?.pattern">
+                      {{'minimun phone length'|translate}}
+                    </p>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="phone2">{{'phone'|translate}} 2</label>
+                  <input id="phone2" type="text" class="form-control" formControlName="phone2" name="phone2">
+                  <div  class="text-danger">
+
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="website">{{'website'|translate}}</label>
+                  <input id="website" type="text" class="form-control" formControlName="website" name="website" autofocus>
+                  <div  class="text-danger">
+
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="facebook_page">{{'facebook link'|translate}}</label>
+                  <input id="facebook_page" type="text" class="form-control" formControlName="facebook_page" name="facebook_page" autofocus>
+                  <div  class="text-danger">
+
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="whatsapp_phone">{{'whatsapp phone'|translate}}</label>
+                  <input id="whatsapp_phone" type="text" class="form-control" formControlName="whatsapp_phone" name="whatsapp_phone" autofocus>
+                  <div  class="text-danger">
+
+                  </div>
+                </div>
+                <div class="form-group">
+                  <input class="form-control" type="file" accept="image/*" (change)="showPreview($event)" />
+
+                  <!-- Image Preview -->
+                  <div  class="imagePreview" *ngIf="imageEntityURL && imageEntityURL !== ''">
+                    <img style="width: 200px;height: 170px" class="img-thumbnail img-fluid img-profile-preview" [src]="imageEntityURL" height="170px" width="200px">
+                  </div>
+                  <ng-container *ngIf="imageEntityError != ''">
+                    <p class="text-danger small">
+                      {{'max file size error'|translate}}
+                    </p>
+                  </ng-container>
+
+                </div>
+
+                <div *ngIf="formError!=''" class="form-group text-danger">
+                  {{formError}}
+                </div>
+
+                <div class="form-group m-0">
+                  <button [disabled]="!formEntity.valid||loadingForm" type="submit" class="btn btn-primary btn-block">
+                    {{'save'|translate}}<img *ngIf="loadingForm"  class=" font-weight-bold ml-auto loader-min" src="assets/img/spinner.gif" />
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+        </div>
+      </ng-template>
+
+
+      <!-- template end entity -->
+
+      <!-- template activation -->
+
+      <ng-template #templateActivation>
+        <div class="modal-header login">
+          <img src="assets/img/lepoint.png" class="" style="width: 100px;height: 50px" />
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modalActivation.hide()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body bg-white ">
+          <alert *ngIf="alertStatus" type="info" [dismissOnTimeout]="5000">
+            <strong>{{alertMsg}}!</strong>
+          </alert>
+
+          <div class="card fat">
+            <div class="card-body">
+              <h4 class="card-title">{{'manage activation'|translate}}</h4>
+              <form  [formGroup]="formActivation" (ngSubmit)="addActivation()">
+                <div class="form-group">
+                  <label for="act_days">{{'days'|translate}} *</label>
+                  <input id="act_days" type="number" class="form-control" formControlName="days" name="days" required autofocus>
+                  <div  *ngIf="f4.days.invalid && f4.days.touched && f4.days.errors?.required" class="text-danger">
+                    {{'required field'|translate}}
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="act_amount">{{'amount'|translate}} </label>
+                  <input id="act_amount" type="number" class="form-control" formControlName="amount" name="amount" required/>
+
+                  <div *ngIf="f4.amount.invalid && f4.amount.touched && f4.amount.errors?.required" class="text-danger">
+                    {{'required field'|translate}}
+
+                  </div>
+                </div>
+
+
+                <div *ngIf="formActivationError!=''" class="form-group text-danger">
+                  {{formActivationError}}
+                </div>
+
+                <div class="form-group m-0">
+                  <button [disabled]="!formActivation.valid||loadingFormActivation" type="submit" class="btn btn-primary btn-block">
+                    {{'save'|translate}}<img alt="" *ngIf="loadingFormActivation"  class=" font-weight-bold ml-auto loader-min" src="assets/img/spinner.gif" />
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+        </div>
+      </ng-template>
+
+      <!-- template activation end -->
+
+      <!-- template NighPharmacy -->
+
+      <ng-template #templateNewNightPharmacy>
+        <div class="modal-header login">
+          <img src="assets/img/lepoint.png" class="" style="width: 100px;height: 50px" />
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modalNewNightPharmacy.hide()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body bg-white ">
+          <alert *ngIf="alertStatus" type="info" [dismissOnTimeout]="5000">
+            <strong>{{alertMsg}}!</strong>
+          </alert>
+
+          <div class="card fat">
+            <div class="card-body">
+              <h4 class="card-title">{{'night pharmacy'|translate}}</h4>
+              <form  [formGroup]="formNightPharmacy" (ngSubmit)="addNightPharmacy()">
+                <div class="form-group">
+                  <label for="city_n">{{'city'|translate}} *</label>
+                  <select id="city_n" class="form-control" formControlName="town" name="town" required>
+                    <option disabled selected value="">------</option>
+                    <option *ngFor="let city of cities" value="{{city.name}}">{{city.name}} </option>
+                  </select>
+                </div>
+
+
+
+                <div *ngIf="formNightPharmacyError!=''" class="form-group text-danger">
+                  {{formNightPharmacyError}}
+                </div>
+
+                <div class="form-group m-0">
+                  <button [disabled]="!formNightPharmacy.valid||loadingFormNightPharmacy" type="submit" class="btn btn-primary btn-block">
+                    {{'save'|translate}}<img alt="" *ngIf="loadingFormNightPharmacy"  class=" font-weight-bold ml-auto loader-min" src="assets/img/spinner.gif" />
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+        </div>
+      </ng-template>
+
+      <!-- template NighPharmacy end -->
+
+      <!-- template edit NighPharmacy -->
+
+      <ng-template #templateEditNightPharmacy>
+        <div class="modal-header login">
+          <img src="assets/img/lepoint.png" class="" style="width: 100px;height: 50px" />
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modalEditNightPharmacy.hide()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body bg-white ">
+          <alert *ngIf="alertStatus" type="info" [dismissOnTimeout]="5000">
+            <strong>{{alertMsg}}!</strong>
+          </alert>
+
+          <div class="card fat">
+            <div class="card-body">
+              <h4 class="card-title">{{'night pharmacy'|translate}}</h4>
+              <form  [formGroup]="formEditNightPharmacy" (ngSubmit)="editNightPharmacy()">
+                <div class="form-group">
+                  <label for="city_n1">{{'city'|translate}} *</label>
+                  <select readonly disabled id="city_n1" class="form-control" formControlName="town" name="town" required>
+                    <option *ngFor="let city of cities" value="{{city.name}}" [selected]="city.name == openPharmacy.name">{{city.name}} </option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="content22">{{'content2'|translate}} </label>
+                  <textarea rows="10" id="content22" class="form-control" formControlName="content" name="content"></textarea>
+                </div>
+
+                <div class="form-group">
+                  <label for="write_date">Date *</label>
+                  <input type="date" value=""  id="write_date" class="form-control" formControlName="write_date" name="write_date" />
+                </div>
+
+
+                <div *ngIf="formEditNightPharmacyError!=''" class="form-group text-danger">
+                  {{formEditNightPharmacyError}}
+                </div>
+
+                <div class="form-group m-0">
+                  <button [disabled]="!formEditNightPharmacy.valid||loadingFormEditNightPharmacy" type="submit" class="btn btn-primary btn-block">
+                    {{'save'|translate}}<img alt="" *ngIf="loadingFormEditNightPharmacy"  class=" font-weight-bold ml-auto loader-min" src="assets/img/spinner.gif" />
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+        </div>
+      </ng-template>
+
+      <!-- template edit NighPharmacy end -->
+
+
+    </div>
+    <app-footer></app-footer>
+  </div>
+</div>

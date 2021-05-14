@@ -1,0 +1,96 @@
+<div class="fixed-bottom-bar">
+  <div class="osahan-home-page">
+    <div class="bg-primary p-2">
+      <app-header></app-header>
+
+    </div>
+
+
+    <div class="bg-light home-list main-content">
+
+      <alert *ngIf="globalAlertStatus != ''" type="info" [dismissOnTimeout]="10000">
+        <strong>{{globalAlertStatus}}</strong>
+      </alert>
+
+
+
+
+
+      <div class="card p-3" style="border-top-style: none!important;border-radius: 0!important;border-right-style: none!important;border-left-style: none!important;" *ngIf="entity!== null">
+        <div class="px-3 pb-3 title d-flex align-items-center  row">
+          <img alt="" *ngIf="loading" class="pt-3 font-weight-bold  loader"  src="assets/img/spinner.gif" />
+          <a class="text-danger font-weight-bold ml-auto" routerLink="{{entity.link}}"><i class="feather-chevron-left"></i> {{'back'|translate}}</a>
+
+        </div>
+        <h5> <span class="feather-home"></span> {{entity.global_info.name}} </h5>
+        <div class="row container-fluid">
+          <p style="font-size: 14px; " class="font-weight-light text-dark m-0" > <span class="feather-phone-call"></span> <a style="color: black;font-size: 12px" href="tel:{{entity.global_info.phone1}}"> {{entity.global_info.phone1}}</a> <span *ngIf="entity.global_info.phone2 != ''"> - <a style="color: black;font-size: 12px" href="tel:{{entity.global_info.phone2}}">{{entity.global_info.phone2}}</a></span></p>
+        </div>
+        <div *ngIf="entity.global_info.whatsapp_phone != null && entity.global_info.whatsapp_phone != ''" class="row container-fluid mb-2">
+          <p style="font-size: 14px; " class="font-weight-light text-dark m-0" >
+            <img style="height: 15px;width: 15px" src="assets/img/whatsapp.png"/>
+            <a style="color: black;font-size: 12px" target="_blank" href="https://api.whatsapp.com/send?phone{{ entity.global_info.whatsapp_phone.replace(' ', '') }}=&text=Hi"> {{entity.global_info.whatsapp_phone}}</a>
+          </p>
+        </div>
+        <div *ngIf="entity.global_info.facebook_page != null && entity.global_info.facebook_page != ''" class="row container-fluid mb-2">
+          <p style="font-size: 14px; " class="font-weight-light text-dark m-0" >
+            <img style="height: 15px;width: 15px" src="assets/img/facebook.png"/>
+            <a style="color: black;font-size: 12px" target="_blank" href="{{ entity.global_info.facebook_page.replace(' ', '') }}"> {{entity.global_info.facebook_page.replace(' ', '')}}</a>
+          </p>
+        </div>
+        <div *ngIf="entity.global_info.website != null && entity.global_info.website != ''" class="row container-fluid mb-2">
+          <p style="font-size: 14px; " class="font-weight-light text-dark m-0" >
+            <img style="height: 15px;width: 15px" src="assets/img/website.png"/>
+            <a style="color: black;font-size: 12px" target="_blank" href="{{ entity.global_info.website.replace(' ', '') }}"> {{entity.global_info.website.replace(' ', '')}}</a>
+          </p>
+        </div>
+        <div class="row container-fluid mb-2">
+          <p style="font-size: 14px" class="font-weight-light text-dark m-0"> <span class="feather-map-pin"></span> {{entity.location.city}}, {{entity.location.street}}, {{entity.location.street_detail}}</p>
+
+        </div>
+
+        <div *ngIf="entity.flash_message !== ''" class=" row container-fluid">
+          <p class="flash-me">
+            {{entity.flash_message}}
+          </p>
+        </div>
+        <div class="row ">
+          <div class="col-lg-12 col-md-12" style="font-size: 12px">
+            <p>{{entity.global_info.description}}</p>
+
+          </div>
+
+
+        </div>
+
+        <div class="row modal-body bg-white " *ngIf="openAdvert != null && entity != null">
+
+          <h6>{{openAdvert.title}}</h6><br/>
+          <em class="ml-auto" style="font-size: 10px">{{openAdvert.date.split(' ')[0]}}</em>
+
+          <div class="card fat">
+            <img class="card-img-top" *ngIf="openAdvert.file != null && showExtensions.includes(openAdvert.file.extension)" src="{{openAdvert.file.path}}" alt="{{openAdvert.title}}">
+            <div class="card-body" style="padding: 0!important;">
+              <div class="card-text container-fluid">{{openAdvert.content}}</div>
+              <p>
+                <a *ngIf="openAdvert.file != null" style="font-size: 11px" target="_blank" class="text-danger font-weight-bold ml-auto" href="{{openAdvert.file.path}}"><i class="feather-download"></i> {{'download'|translate}}</a>
+              </p>
+
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div *ngIf="entity!== null" class="bg-light">
+
+      </div>
+    </div>
+
+
+
+
+    <app-footer></app-footer>
+  </div>
+</div>

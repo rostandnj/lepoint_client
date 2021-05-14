@@ -1,0 +1,38 @@
+<div class="text-white">
+  <div class="title d-flex align-items-start ">
+
+    <a routerLink="/" ><img *ngIf="currentLogo !== ''" src="{{currentLogo}}" class="" style="width: 120px;height: 70px;padding-bottom: 10px" /></a>
+    <div class="ml-auto p-3" >
+      <a routerLink="/manage/dashboard/admin" *ngIf="isLogin && userType == 0"  class="text-white small font-weight-bold text-decoration-none ml-auto">
+        <i class="feather-settings text-white"></i>
+        admin
+      </a>
+      <a routerLink="/manage/dashboard" *ngIf="isLogin && userType == 1"  class="text-white small font-weight-bold text-decoration-none ml-auto">
+        <i class="feather-settings text-white"></i>
+        {{'manage services'|translate}}
+      </a>
+      <a routerLink="/manage/dashboard" *ngIf="isLogin && userType == 10"  class="text-white small font-weight-bold text-decoration-none ml-auto">
+        <i class="feather-settings text-white"></i>
+        {{'manage services'|translate}}
+      </a>
+      <a routerLink="/manage/dashboard" *ngIf="isLogin && userType == 11"  class="text-white small font-weight-bold text-decoration-none ml-auto">
+        <i class="feather-settings text-white"></i>
+        {{'manage orders'|translate}}
+      </a>
+      <a routerLink="/my/orders" *ngIf="isLogin" style="margin-left: 10px"  class="text-white small font-weight-bold text-decoration-none">
+        <i class="feather-package text-white"></i>
+        {{'my orders'|translate}}
+      </a>
+      <em>&nbsp;&nbsp;&nbsp;</em>
+      <a href="#" *ngIf="isLogin" (click)="logout()" style="margin-left: 8px" class="text-white small font-weight-bold text-decoration-none ml-auto">
+        <i class="feather-log-out text-white"></i>
+        {{'logout'|translate}}
+      </a>
+
+      <a *ngIf="frStatus === true"  class="btn  btn-sm ml-auto" (click)="onChangeLang('en')"><span class="feather-globe"> </span> En</a>
+      <a *ngIf="enStatus === true"  class="btn  btn-sm ml-auto" (click)="onChangeLang('fr')"> <span class="feather-globe"> </span>  Fr</a>
+    </div>
+
+
+  </div>
+</div>

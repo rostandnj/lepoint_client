@@ -1,0 +1,82 @@
+#wrapper {
+  overflow-x: hidden;
+}
+
+#sidebar-wrapper {
+  min-height: 200px;
+  -webkit-transition: margin .25s ease-out;
+  -moz-transition: margin .25s ease-out;
+  -o-transition: margin .25s ease-out;
+  transition: margin .25s ease-out;
+}
+
+#sidebar-wrapper .sidebar-heading {
+  padding: 0.875rem 1.25rem;
+  font-size: 1.2rem;
+}
+
+#sidebar-wrapper .list-group {
+  /*width: 15rem;*/
+}
+
+#page-content-wrapper {
+  /*min-width: 100vw;*/
+}
+
+#wrapper.toggled #sidebar-wrapper {
+  margin-left: 0;
+}
+
+@media (min-width: 768px) {
+  #sidebar-wrapper {
+    margin-left: 0;
+  }
+
+  #page-content-wrapper {
+    min-width: 0;
+    /*width: 100%;*/
+  }
+
+  #wrapper.toggled #sidebar-wrapper {
+    margin-left: -15rem;
+  }
+}
+
+
+.slick-slider {
+  width: 90%;
+  margin: auto;
+  background: #000;
+}
+
+.nav-btn {
+  height: 47px;
+  position: absolute;
+  width: 26px;
+  cursor: pointer;
+  top: 100px !important;
+}
+
+.prev-slide.slick-disabled,
+.next-slide.slick-disabled {
+  pointer-events: none;
+  opacity: 0.2;
+}
+
+.prev-slide {
+  background: url('https://www.freakyjolly.com/demo/Angular/Angular7/slickCarousel/nav-icon.cfc2db4891a3a3aa9346.png') no-repeat scroll 0 0;
+  left: -33px;
+}
+
+.next-slide {
+  background: url('https://www.freakyjolly.com/demo/Angular/Angular7/slickCarousel/nav-icon.cfc2db4891a3a3aa9346.png') no-repeat scroll -24px 0px;
+  right: -33px;
+}
+
+.prev-slide:hover {
+  background-position: 0px -53px;
+}
+
+.next-slide:hover {
+  background-position: -24px -53px;
+}

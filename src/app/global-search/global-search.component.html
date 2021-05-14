@@ -1,0 +1,40 @@
+
+<div class="row mt-4" >
+
+  <div class="rounded  overflow-hiddenoverflow-hidden  col-md-4 col-lg-4 col-sm-12">
+    <div class="">
+      <input id="search-res" type="text" class="shadow-none border-0 form-control" placeholder="{{'search'|translate}}"
+             aria-label="" aria-describedby="basic-addon1">
+    </div>
+    <label class="control-label text-white text-sm-right" style="" for="search-res"><small>{{'looking for'|translate}}</small></label>
+  </div>
+
+  <div class=" overflow-hidden col-md-4 col-lg-4 col-sm-12">
+    <div class="input-group">
+      <select id="service" class="form-control">
+        <option value="restaurant">{{'service_restaurant'|translate}}</option>
+        <option value="hotel">{{'service_hotel'|translate}}</option>
+        <option value="pharmacy">{{'service_pharmacy'|translate}}</option>
+        <option value="green_nulber">{{'service_green_number'|translate}}</option>
+      </select>
+    </div>
+    <label class="control-label text-white" for="service"><small>{{'service'|translate}}</small></label>
+  </div>
+
+  <div class=" overflow-hidden col-md-4 col-lg-4 col-sm-8">
+    <div class="input-group">
+      <select id="city" class="form-control">
+        <option value="">{{'all'|translate}}</option>
+        <option *ngFor="let city of cities" value="{{city.name}}">{{city.name}} </option>
+      </select>
+      <div class="input-group-append">
+        <button class="border-0 btn btn-outline-secondary text-dark bg-white btn-block"><i
+          class="feather-search"></i></button>
+      </div>
+    </div>
+    <label class="control-label text-white" for="city"><small>{{'city'|translate}}</small></label>
+  </div>
+
+</div>
+
+

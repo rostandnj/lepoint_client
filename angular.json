@@ -24,9 +24,21 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.css"
+              "src/vendor/bootstrap/css/bootstrap.min.css",
+              "src/vendor/slick/slick.min.css",
+              "src/vendor/slick/slick-theme.min.css",
+              "src/vendor/icons/feather.css",
+              "src/styles.css",
+              "src/vendor/sidebar/demo.css"
             ],
-            "scripts": []
+            "scripts": [
+              "src/vendor/jquery/jquery.min.js",
+              "src/vendor/bootstrap/js/bootstrap.bundle.min.js",
+              "src/vendor/sidebar/hc-offcanvas-nav.js",
+              "src/assets/js/osahan.js",
+              "node_modules/slick-carousel/slick/slick.min.js",
+              "src/vendor/rocket-loader.min.js"
+            ]
           },
           "configurations": {
             "production": {
@@ -119,6 +131,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "restaurant-client"
+    }
+  },
+  "defaultProject": "restaurant-client",
+  "cli": {
+    "analytics": false
+  }
 }

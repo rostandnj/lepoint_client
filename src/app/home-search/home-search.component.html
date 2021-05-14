@@ -1,0 +1,27 @@
+
+<div class="row" >
+
+  <div class="rounded  overflow-hiddenoverflow-hidden  col-md-6 col-lg-6 col-sm-12">
+    <label class="control-label text-white text-sm-right" style="" for="search-res"></label>
+    <div class="form-group">
+      <input id="search-res" type="text" class="shadow-none border-0 form-control" placeholder="{{'Search for restaurants'|translate}}"
+             aria-label="" aria-describedby="basic-addon1">
+    </div>
+  </div>
+
+  <div class=" overflow-hidden col-md-6 col-lg-6 col-sm-8">
+    <label class="control-label text-white" for="city"></label>
+    <div class="input-group form-group">
+      <select id="city" class="form-control">
+        <option *ngFor="let city of cities" value="{{city.name}}">{{city.name}} </option>
+      </select>
+      <div class="input-group-append">
+        <button class="border-0 btn btn-outline-secondary text-dark bg-white btn-block"><i
+          class="feather-search"></i></button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+

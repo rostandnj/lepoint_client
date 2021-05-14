@@ -1,0 +1,90 @@
+
+<div class="fixed-bottom-bar">
+  <div class="osahan-home-page">
+    <div class="bg-primary pt-1 pb-1 pr-2 pl-2">
+      <app-header></app-header>
+
+    </div>
+
+
+    <div class="bg-light home-list" >
+
+      <div class="px-3 pb-1 title d-flex align-items-center">
+        <h6 class="m-0 pt-3">{{'order your dishes'|translate}} !</h6> <a *ngIf="entityType == '7'"  routerLink="/all-night/drugstore" style="cursor:pointer;font-size: 12px"  class="mt-3 font-weight-bold ml-auto text-danger" >{{'night pharmacy'|translate}}</a>
+        <img *ngIf="loading" class="pt-3 font-weight-bold ml-auto loader" src="assets/img/spinner.gif" />
+
+      </div>
+
+      <form class="row pl-4 pr-4"  [formGroup]="formSearch" (ngSubmit)="searchEntity()">
+
+        <div class="form-group col-sm-12 input-group rounded shadow-sm p-0 col-md-8 col-sm-12 " >
+
+          <select id="city" class="form-control" formControlName="city" name="city" required aria-describedby="basic-addon1">
+            <option *ngFor="let city of cities" value="{{city.name}}" [selected]="city === 'Yaoundé'">{{city.name}} </option>
+          </select>
+
+
+          <div class="input-group-append">
+            <button [disabled]="!formSearch.valid||loading" type="submit" class="border-0 btn btn-outline-secondary text-dark bg-white btn-block"><i
+              class="feather-search"></i></button>
+          </div>
+        </div>
+
+      </form>
+      <div class="most_popular px-3">
+        <div class="row container-fluid">
+          <a (click)="showAll()" href="javascript:void(0)" style="cursor:pointer;font-size: 10px"  class="font-weight-bold text-danger" >{{'show all'|translate}}</a>
+
+        </div>
+        <div class="row">
+          <div class="col-lg-4 col-md-4 col-sm-6 mt-4 mb-4" *ngFor="let entity of entitiesToShow">
+            <div class="list-card bg-white h-100 rounded overflow-hidden position-relative shadow-sm">
+              <div class="list-card-image">
+                <div class="star position-absolute" style="display: none"><span class="badge badge-success"><i
+                  class="feather-star"></i> {{entity.note}}</span></div>
+                <div style="display: none" class="favourite-heart text-danger position-absolute"><a href="#"><i
+                  class="feather-heart"></i></a></div>
+                <div class="member-plan position-absolute"><span class="badge badge-dark">{{entity.location.country.code}}</span>
+                </div>
+                <a  routerLink="/{{entity.link}}{{entity.id}}/{{entity.global_info.slug}}">
+                  <img src="{{entity.global_info.image}}" class="img-fluid item-img w-100">
+                </a>
+              </div>
+              <div class="p-3 position-relative">
+                <div class="list-card-body">
+                  <h6 class="mb-1">
+                    <a  routerLink="/{{entity.link}}{{entity.id}}/{{entity.global_info.slug}}" class="text-black">
+                      {{entity.global_info.name}}
+                    </a>
+
+                  </h6>
+                  <p class="text-gray mb-1 small">
+                    <span class="feather-map-pin"></span> {{entity.location.city}} • {{entity.location.street}}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="!loading&&entitiesToShow.length==0" class="row container-fluid justify-content-center align-self-center">
+            <em style="margin-top: 100px"  class="">{{'entity not available'|translate}} </em>
+          </div>
+
+
+        </div>
+        <div class="container-fluid" *ngIf="isSearch === false && loadingMore">
+          <button (click)="load()"  class="btn btn-primary">{{'loading more'|translate}} </button><img *ngIf="loading" class="loader" src="assets/img/spinner.gif"/>
+
+        </div>
+        <div class="container-fluid" *ngIf="isSearch && canLoadingSearchMore">
+          <button (click)="searchEntityMore()"  class="btn btn-primary">{{'loading more'|translate}} </button><img *ngIf="loadingSearchMore" class="loader" src="assets/img/spinner.gif"/>
+
+        </div>
+
+      </div>
+
+    </div>
+    <app-footer></app-footer>
+
+  </div>
+
+</div>

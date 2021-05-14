@@ -1,0 +1,1418 @@
+<div class="fixed-bottom-bar">
+  <div class="osahan-home-page">
+    <div class="bg-primary p-2">
+      <app-header></app-header>
+
+    </div>
+    <div class=" container-fluid main-content">
+      <alert *ngIf="globalAlertStatus != ''" type="info" [dismissOnTimeout]="10000">
+        <strong>{{globalAlertStatus}}</strong>
+      </alert>
+
+      <div class="px-3  title d-flex align-items-center background-qr row" style="min-height: 50px">
+
+        <em *ngIf="![0, 1, 10, 11].includes(userType)  && !loading" class="m-0 pt-3">{{'page denied'|translate}} </em>
+        <img *ngIf="loading" class="pt-3 font-weight-bold ml-auto loader" src="assets/img/spinner.gif" />
+      </div>
+
+      <div class="d-flex row"  *ngIf="userType != null && [0, 1, 10, 11].includes(userType) && entity != null">
+
+        <!-- Sidebar -->
+        <div class="col-lg-3 col-md-3 col-sm-12" >
+          <div class="sidebar-heading">
+            <h6 class="m-0 pt-2 mb-2">{{'manage entity'|translate}}
+            </h6>
+            <div class="row container-fluid mb-2">
+
+
+
+            </div>
+          </div>
+          <div class="list-group list-group-flush">
+            <button *ngIf="entityWithMenu.includes(number(entity.type)) && ![11,20].includes(userType)" class="btn btn-primary list-group-item list-group-item-action bg-light text-white mb-2" (click)="changeCanOrder(entity.id)" >
+              <span *ngIf="entity.can_order === true" class="feather-x-circle"></span>
+              <span *ngIf="entity.can_order === false" class="feather-check-circle"></span> {{'use order system'|translate}}
+            </button>
+            <button (click)="openModalFlashMessage(templateFlashMessage)" class=" btn btn-primary list-group-item list-group-item-action bg-light text-white">{{'flash message'|translate}}</button>
+            <button (click)="showTab('menu')" *ngIf="entityWithMenu.includes(number(entity.type)) && entity.can_order"  class="mt-2 btn btn-primary list-group-item list-group-item-action bg-light text-white">{{'menus'|translate}}</button>
+            <button (click)="showTab('product')"  *ngIf="entityWithProduct.includes(number(entity.type))" class="mt-2 btn btn-primary list-group-item list-group-item-action bg-light text-white">{{'products'|translate}}</button>
+            <button (click)="showTab('order')" *ngIf="entityWithMenu.includes(number(entity.type))  && entity.can_order"  class=" mt-2 btn btn-primary list-group-item list-group-item-action bg-light text-white">{{'orders'|translate}}</button>
+            <button (click)="showTab('pay_mode')" *ngIf="entityWithMenu.includes(number(entity.type))  && entity.can_order"  class=" mt-2 btn btn-primary list-group-item list-group-item-action bg-light text-white">{{'payment method'|translate}}</button>
+            <button (click)="showTab('advert')"  class=" mt-2 btn btn-primary list-group-item list-group-item-action bg-light text-white">{{'advert'|translate}}</button>
+            <button (click)="showTab('manager')" *ngIf="userType != null && [0, 1, 10].includes(userType)"  class="mt-2 btn btn-primary list-group-item list-group-item-action bg-light text-white">{{'manager'|translate}}</button>
+
+          </div>
+
+        </div>
+        <!-- /#sidebar-wrapper -->
+
+        <div *ngIf="entity!= null" class="col-lg-9 col-md-9 col-sm-12 mt-2">
+          <div class="card bg-white ">
+
+            <nav class="card-header navbar navbar-expand-lg navbar-light bg-white mb-1 ">
+              <button  (click)="showMainPage()" class="btn btn-outline-primary mr-2" > {{'info'|translate}}</button>
+              <button *ngIf="![11,20].includes(userType) && activeTab == ''" (click)="openModalEdit(template)" class="btn btn-outline-primary mr-2" ><span class="feather-edit"></span> {{'info'|translate}}</button>
+              <button (click)="openModalTopManager(templateAddTopManager)" *ngIf="userType != null && [0].includes(userType) && entity.top_manager == null" class="btn btn-outline-primary mr-2" ><span class="feather-plus"></span> {{'top manager'|translate}}</button>
+              <button (click)="showTopManager(templateShowTopManager)" *ngIf="userType != null && [0].includes(userType) && entity.top_manager != null" class="btn btn-outline-primary mr-2" ><span class="feather-eye"></span> {{'account top manager'|translate}}</button>
+              <button (click)="openModalAddMenu(templateAddMenu)" *ngIf="activeTab == 'menu'" class="btn btn-outline-primary ml-auto" ><span class="feather-plus"></span> {{'menu'|translate}}</button>
+              <button (click)="openModalAddProduct(templateAddProduct)" *ngIf="activeTab == 'product'" class="btn btn-outline-primary ml-auto" ><span class="feather-plus"></span> {{'product'|translate}}</button>
+              <button (click)="openModalManager(templateAddManager)" *ngIf="userType != null && [0, 1, 10].includes(userType) && activeTab == 'manager'" class="btn btn-outline-primary ml-auto" ><span class="feather-plus"></span> {{'manager'|translate}}</button>
+              <button (click)="openModalAdvert(templateAddAdvert)" *ngIf="activeTab == 'advert'" class="btn btn-outline-primary ml-auto" ><span class="feather-plus"></span> {{'advert'|translate}}</button>
+              <button (click)="openModalAddPay(templateAddPay)" *ngIf="activeTab == 'pay_mode'" class="btn btn-outline-primary ml-auto" ><span class="feather-plus"></span> {{'payment'|translate}}</button>
+
+
+            </nav>
+
+            <!-- main tab -->
+            <div class="card-body" *ngIf="activeTab == ''">
+              <h5> <span class="feather-home"></span> {{entity.global_info.name}}  <a style="font-size: 11px" target="_blank" class="text-danger font-weight-bold ml-auto" href="{{configLink}}?id={{entity.id}}"><i class="feather-download"></i>qr-code</a></h5>
+              <div class="row container-fluid mb-2">
+                <p style="font-size: 14px; " class="font-weight-light text-dark m-0" > <span class="feather-phone-call"></span> <a style="color: black;font-size: 12px" href="tel:{{entity.global_info.phone1}}"> {{entity.global_info.phone1}}</a> <span *ngIf="entity.global_info.phone2 != ''"> - <a style="color: black;font-size: 12px" href="tel:{{entity.global_info.phone2}}">{{entity.global_info.phone2}}</a></span></p>
+
+              </div>
+              <div *ngIf="entity.global_info.whatsapp_phone != null && entity.global_info.whatsapp_phone != ''" class="row container-fluid mb-2">
+                <p style="font-size: 14px; " class="font-weight-light text-dark m-0" >
+                  <img style="height: 15px;width: 15px" src="assets/img/whatsapp.png"/>
+                  <a style="color: black;font-size: 12px" target="_blank" href="https://api.whatsapp.com/send?phone{{ entity.global_info.whatsapp_phone.replace(' ', '') }}=&text=Hi"> {{entity.global_info.whatsapp_phone}}</a>
+                </p>
+              </div>
+              <div *ngIf="entity.global_info.facebook_page != null && entity.global_info.facebook_page != ''" class="row container-fluid mb-2">
+                <p style="font-size: 14px; " class="font-weight-light text-dark m-0" >
+                  <img style="height: 15px;width: 15px" src="assets/img/facebook.png"/>
+                  <a style="color: black;font-size: 12px" target="_blank" href="{{ entity.global_info.facebook_page.replace(' ', '') }}"> {{entity.global_info.facebook_page.replace(' ', '')}}</a>
+                </p>
+              </div>
+              <div *ngIf="entity.global_info.website != null && entity.global_info.website != ''" class="row container-fluid mb-2">
+                <p style="font-size: 14px; " class="font-weight-light text-dark m-0" >
+                  <img style="height: 15px;width: 15px" src="assets/img/website.png"/>
+                  <a style="color: black;font-size: 12px" target="_blank" href="{{ entity.global_info.website.replace(' ', '') }}"> {{entity.global_info.website.replace(' ', '')}}</a>
+                </p>
+              </div>
+              <div class="row container-fluid mb-2">
+                <p style="font-size: 14px" class="font-weight-light text-dark m-0"> <span class="feather-map-pin"></span> {{entity.location.city}}, {{entity.location.street}}, {{entity.location.street_detail}}</p>
+
+              </div>
+              <div *ngIf="entity.flash_message !== ''" class=" row container-fluid">
+                <p class="flash-me">
+                  {{entity.flash_message}}
+                </p>
+              </div>
+              <div class="row ">
+                <div class="col-lg-8 col-md-8" style="font-size: 12px">
+                  <p>{{entity.global_info.description}}</p>
+
+                </div>
+                <div class="col-lg-4 col-md-4">
+                  <img style="width: 200px; height: 150px; padding: 10px" class=" " src="{{entity.global_info.image}}" alt="{{entity.global_info.name}}">
+                </div>
+
+
+              </div>
+
+            </div>
+
+            <!-- menu tab -->
+            <div class="card-body" *ngIf="activeTab == 'menu'">
+
+              <div class="p-2 border-bottom menu-list" *ngFor="let menu of menus" [style]="{'background-color': menu.is_available === true ? '#28a7450d':'white'}" >
+                     <span class="float-right">
+
+                          <button class="btn btn-secondary btn-sm dropdown-toggle small small-btn" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Action
+                          </button>
+                          <div class="dropdown-menu dropdown-action">
+                           <button (click)="openModalFormMenuEdit(templateMenuEdit, menu)" class="dropdown-item btn btn-link"> <span class="feather-edit"></span> {{'edit'|translate}}</button>
+                           <button (click)="deleteMenu(menu.id)" class="dropdown-item btn btn-link"><span class="feather-trash"></span> {{'delete'|translate}}</button>
+                          </div>
+
+                        </span>
+                  <div class="media">
+                    <img src="{{menu.image}}" alt="" class="mr-3 rounded-pill " [ngClass]="{'img-thumbnail-main': menu.is_day_menu}">
+                    <div class="media-body">
+                      <h5 class="mb-1">{{menu.name}}
+                      </h5>
+                      <p class="text-muted mb-0" style="font-size: 10px">{{menu.description}} </p>
+                      <p class="text-muted mb-0">{{menu.price}} XAF</p>
+                    </div>
+                  </div>
+                </div>
+
+
+
+              <div  class="row container-fluid"  *ngIf="menus.length == 0" >
+                  <em>{{'no items available'|translate}}</em>
+              </div>
+
+
+            </div>
+
+            <!-- order tab -->
+            <div class="card-body" *ngIf="activeTab == 'order'">
+
+              <div class="p-2 border-bottom menu-list" *ngFor="let order of orders">
+                <span class="float-right">
+                  <button class="btn btn-secondary btn-sm dropdown-toggle small small-btn" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Action
+                          </button>
+                          <div class="dropdown-menu dropdown-action">
+                            <button (click)="showOrder(templateOrder, order)" class="dropdown-item btn btn-link" type="button" >
+                            {{'show'|translate}}
+                          </button>
+                          <button *ngIf="order.status ==0" class="dropdown-item btn btn-link" (click)="updateUserStatus(order, 1)"><i class="feather-check-circle"></i> {{'paid'|translate}}</button>
+                           <button *ngIf="order.status ==0 || order.status==1" class="dropdown-item btn btn-link" (click)="updateUserStatus(order, 2)"><i class="feather-check-circle"></i> {{'delivered'|translate}}</button>
+                           <button *ngIf="order.status ==0" class="dropdown-item btn btn-link" (click)="updateUserStatus(order, 10)"><i class="feather-check-circle"></i> {{'cancel'|translate}}</button>
+
+                          </div>
+
+
+
+                        </span>
+                <div class="media">
+                  <img src="{{order.image}}" alt="" class="mr-3 rounded-pill ">
+                  <div class="media-body">
+                    <h6 class="mb-1 small">{{order.reference}} <span *ngIf="order.status == 0" class=" mb-0 badge badge-danger text-white">{{'in progress'|translate}}</span>
+                      <span *ngIf="order.status == 1" class=" mb-0 badge badge-success text-white">{{'paid'|translate}}</span>
+                      <span *ngIf="order.status == 2" class=" mb-0 badge badge-success text-white">{{'delivered'|translate}}</span>
+                      <span *ngIf="order.status == 10" class=" mb-0 badge badge-warning text-white">{{'canceled'|translate}}</span></h6>
+                    <h6 class="mb-1 small" *ngIf="order.client">{{order.client.name}}  {{order.client.surname}} ( {{order.client.phone}} )</h6>
+                    <h6 class="mb-1 small" *ngIf="order.client === null">{{order.customer_name}} ( {{order.customer_phone}} )</h6>
+                    <p class="text-muted mb-0 font-weight-bold">{{order.entity.global_info.name}} - XAF {{order.amount}}</p>
+                    <p> <small>{{order.date}} </small>
+
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div  class="row container-fluid" *ngIf="canLoadMoreOrder"  >
+                <button (click)="getOrdersMore()"  class="btn btn-primary btn-sm">
+                  {{'load more'|translate}}<img *ngIf="loading"  class=" font-weight-bold ml-auto loader-min" src="assets/img/spinner.gif" />
+                </button>
+              </div>
+              <div  class="row container-fluid"  *ngIf="orders.length == 0" >
+                <em>{{'no items available'|translate}}</em>
+              </div>
+
+
+            </div>
+
+            <!-- advert tab -->
+            <div class="card-body" *ngIf="activeTab == 'advert'">
+
+              <div class="p-2 border-bottom menu-list" *ngFor="let ad of ads" [style]="{'background-color': ad.status === true ? '#28a7450d':'white'}" >
+                     <span class="float-right">
+
+                          <button class="btn btn-secondary btn-sm dropdown-toggle small small-btn" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Action
+                          </button>
+                          <div class="dropdown-menu dropdown-action">
+                           <button (click)="openModalFormAdvertEdit(templateEditAdvert, ad)" class="dropdown-item btn btn-link"> <span class="feather-edit"></span> {{'edit'|translate}}</button>
+                           <button (click)="deleteAdvert(ad.id)"  class="dropdown-item btn btn-link"><span class="feather-trash"></span> {{'delete'|translate}}</button>
+                          </div>
+
+                        </span>
+                <div class="media">
+                  <img *ngIf="ad.file != null && showExtensions.includes(ad.file.extension)" src="{{ad.file.path}}" alt="" class="mr-3 rounded-pill " [ngClass]="{'img-thumbnail-main': !ad.status}">
+                  <div class="media-body">
+                    <h6 class="mb-1">{{ad.title}}
+                    </h6>
+                    <p class="text-muted mb-0" style="font-size: 10px">{{ad.content.slice(0,100)}}... </p>
+                    <p><a style="font-size: 11px" target="_blank" class="text-danger font-weight-bold ml-auto" href="{{configLinkAdvert}}?slug={{ad.slug}}"><i class="feather-download"></i>qr-code</a></p>
+                    <p class="text-muted mb-0">{{ad.date.split(' ')[0]}} </p>
+                  </div>
+                </div>
+              </div>
+
+              <div  class="row container-fluid" *ngIf="canLoadMoreAdvert"  >
+                <button (click)="getMoreAdvert()"  class="btn btn-primary btn-sm">
+                  {{'load more'|translate}}<img *ngIf="loading"  class=" font-weight-bold ml-auto loader-min" src="assets/img/spinner.gif" />
+                </button>
+              </div>
+
+              <div  class="row container-fluid"  *ngIf="ads.length == 0" >
+                <em>{{'no items available'|translate}}</em>
+              </div>
+
+
+            </div>
+
+            <!-- product tab -->
+            <div class="card-body" *ngIf="activeTab == 'product'">
+
+              <div class="p-2 border-bottom menu-list" *ngFor="let pro of products" [style]="{'background-color': pro.is_available === true ? '#28a7450d':'white'}" >
+                     <span class="float-right">
+
+                          <button class="btn btn-secondary btn-sm dropdown-toggle small small-btn" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Action
+                          </button>
+                          <div class="dropdown-menu dropdown-action">
+                           <button (click)="openModalFormProductEdit(templateEditProduct, pro)" class="dropdown-item btn btn-link"> <span class="feather-edit"></span> {{'edit'|translate}}</button>
+                           <button (click)="deleteProduct(pro.id)" class="dropdown-item btn btn-link"><span class="feather-trash"></span> {{'delete'|translate}}</button>
+                          </div>
+
+                        </span>
+                <div class="media">
+                  <img src="{{pro.image}}" alt="" class="mr-3 rounded-pill " [ngClass]="{'img-thumbnail-main': pro.is_available}">
+                  <div class="media-body">
+                    <h5 class="mb-1">{{pro.name}}
+                    </h5>
+                    <p class="text-muted mb-0" style="font-size: 10px">{{pro.description}} </p>
+                    <p class="text-muted mb-0">{{pro.price}} XAF</p>
+                  </div>
+                </div>
+              </div>
+
+
+
+              <div  class="row container-fluid"  *ngIf="products.length == 0" >
+                <em>{{'no items available'|translate}}</em>
+              </div>
+
+
+            </div>
+
+            <!-- manage manager start -->
+            <div class="card-body" *ngIf="activeTab == 'manager'">
+              <div class="p-2 border-bottom menu-list" *ngFor="let user of managers" [style]="{'background-color': user.type === 10 ? '#fff0f2':'white'}" >
+                        <span class="float-right">
+
+                          <button class="btn btn-secondary btn-sm dropdown-toggle small small-btn" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Action
+                          </button>
+                          <div class="dropdown-menu dropdown-action" style="width: 100px">
+                           <a (click)="removeManager(user.id)" class="dropdown-item" href="javascript:void(0)">{{'remove'|translate}}</a>
+                          </div>
+
+                        </span>
+                <div class="media">
+                  <img src="{{user.picture}}" alt="" class="mr-3 rounded-pill ">
+                  <div class="media-body">
+                    <h6 class="mb-1">{{user.name}} {{user.surname}}
+                    </h6>
+                    <p class="text-muted mb-0"><i class="feather-at-sign"></i>{{user.email}}</p>
+                    <p class="text-muted mb-0"><i class="feather-phone"></i>{{user.phone}}</p>
+                    <p *ngIf="user.type === 11" class="text-muted mb-0 font-weight-bold"><i class="feather-user"></i>{{'account manager'|translate}}</p>
+                  </div>
+                </div>
+              </div>
+
+
+              <div *ngIf="!loading&&managers.length==0" class="row container-fluid justify-content-center align-self-center">
+                <em style="margin-top: 100px"  class="">{{'users not available'|translate}} </em>
+              </div>
+
+
+            </div>
+
+            <!-- pay tab -->
+            <div class="card-body" *ngIf="activeTab == 'pay_mode'">
+
+              <div class="p-2 border-bottom menu-list" *ngFor="let pay of entity.accepted_pay_modes" >
+                     <span class="float-right" *ngIf="pay.pay_mode.name != 'Cash'">
+
+                          <button class="btn btn-secondary btn-sm dropdown-toggle small small-btn" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Action
+                          </button>
+                          <div class="dropdown-menu dropdown-action">
+                           <button (click)="openModalEditPay(templateEditPay, pay)" class="dropdown-item btn btn-link"> <span class="feather-edit"></span> {{'edit'|translate}}</button>
+                           <button (click)="deletePay(pay.id)" class="dropdown-item btn btn-link"><span class="feather-trash"></span> {{'delete'|translate}}</button>
+                          </div>
+
+                        </span>
+                <div class="media">
+
+                  <div class="media-body">
+                    <img  src="assets/base-image/{{pay.pay_mode.image}}" alt="" class="mr-3 rounded-pill ">
+                    <h6  class="mb-1">{{pay.pay_mode.name}}
+                    </h6>
+                  </div>
+                </div>
+              </div>
+
+              <div  class="row container-fluid"  *ngIf="entity.accepted_pay_modes.length == 0" >
+                <em>{{'no items available'|translate}}</em>
+              </div>
+
+
+            </div>
+
+
+
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- template entity -->
+      <ng-template #template>
+        <div class="modal-header login">
+          <img src="assets/img/lepoint.png" class="" style="width: 100px;height: 50px" />
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modalRefEdit.hide()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body bg-white ">
+          <alert *ngIf="alertStatus" type="info" [dismissOnTimeout]="5000">
+            <strong>{{alertMsg}}!</strong>
+          </alert>
+
+          <div class="card fat">
+            <div class="card-body">
+              <h4 class="card-title">{{choosenEntityName|translate}}</h4>
+              <form  [formGroup]="formEntityEdit" (ngSubmit)="updateEntity()">
+                <div class="form-group">
+                  <label for="reg_name">{{'name'|translate}} *</label>
+                  <input id="reg_name" type="text" class="form-control" formControlName="name" name="name" required autofocus>
+                  <div  *ngIf="f1.name.invalid && f1.name.touched && f1.name.errors?.minlength" class="text-danger">
+                    {{'name error'|translate}}
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="reg_description">{{'description'|translate}} *</label>
+                  <textarea  id="reg_description" class="form-control" formControlName="description" name="description"></textarea>
+                  <div *ngIf="f1.description.invalid && f1.description.touched && f1.description.errors?.minlength"  class="text-danger">
+                    {{'description error'|translate}}
+                  </div>
+                </div>
+                <div class="form-group" *ngIf="showCategoryMenu">
+                  <label for="base_categories">{{'categories'|translate}} <em style="font-size: 9px">{{'category helper'|translate}}</em> *</label>
+                  <select multiple id="base_categories" class="form-control" formControlName="base_categories" name="base_categories" required>
+                    <ng-container *ngFor="let cat of baseCategoriesToShow">
+                      <option *ngIf="currentLang == 'fr'"  value="{{cat.id}}">{{cat.name_fr}} </option>
+                      <option *ngIf="currentLang == 'en'"  value="{{cat.id}}">{{cat.name_en}} </option>
+                    </ng-container>
+                  </select>
+                  <div *ngIf="f1.base_categories.invalid && f1.base_categories.touched && f1.base_categories.errors?.required" class="text-danger">
+                    {{'required field'|translate}}
+
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="country_id">{{'country'|translate}} *</label>
+                  <select id="country_id" class="form-control" formControlName="country_id" name="country_id" required>
+                    <option value="cm" selected>Cameroun</option>
+                  </select>
+                  <div class="text-danger">
+
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="city">{{'city'|translate}} *</label>
+                  <select id="city" class="form-control" formControlName="city" name="city" required>
+                    <option *ngFor="let city of cities" value="{{city.name}}">{{city.name}} </option>
+                  </select>
+                  <div class="text-danger">
+
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="street">{{'street'|translate}} *</label>
+                  <input id="street" type="text" class="form-control" formControlName="street" name="street" required autofocus>
+                  <div  *ngIf="f1.street.invalid && f1.street.touched && f1.street.errors?.minlength" class="text-danger">
+                    {{'name error'|translate}}
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="street_detail">{{'street_detail'|translate}}</label>
+                  <input id="street_detail" type="text" class="form-control" formControlName="street_detail" name="street_detail" autofocus>
+                </div>
+
+                <div class="form-group">
+                  <label for="phone1">{{'phone'|translate}} 1 *</label>
+                  <input id="phone1" type="text" class="form-control" formControlName="phone1" name="phone1" required>
+
+                  <div *ngIf="f1.phone1.invalid && f1.phone1.touched" class="text-danger">
+                    <p class="text-danger small" *ngIf="f1.phone1.errors?.required">
+                      {{'required field'|translate}}
+                    </p>
+                    <p class="text-danger small" *ngIf="f1.phone1.errors?.pattern">
+                      {{'minimun phone length'|translate}}
+                    </p>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="phone2">{{'phone'|translate}} 2</label>
+                  <input id="phone2" type="text" class="form-control" formControlName="phone2" name="phone2">
+                  <div  class="text-danger">
+
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="website">{{'website'|translate}}</label>
+                  <input id="website" type="text" class="form-control" formControlName="website" name="website" autofocus>
+                  <div  class="text-danger">
+
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="facebook_page">{{'facebook link'|translate}}</label>
+                  <input id="facebook_page" type="text" class="form-control" formControlName="facebook_page" name="facebook_page" autofocus>
+                  <div  class="text-danger">
+
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="whatsapp_phone">{{'whatsapp phone'|translate}}</label>
+                  <input id="whatsapp_phone" type="text" class="form-control" formControlName="whatsapp_phone" name="whatsapp_phone" autofocus>
+                  <div  class="text-danger">
+
+                  </div>
+                </div>
+                <div class="form-group">
+                  <input class="form-control" type="file" accept="image/*" (change)="showPreview($event)" />
+
+                  <!-- Image Preview -->
+                  <div  class="imagePreview" *ngIf="imageEntityURLEdit && imageEntityURLEdit !== ''">
+                    <img style="width: 200px;height: 170px" class="img-thumbnail img-fluid img-profile-preview" [src]="imageEntityURLEdit" height="170px" width="200px">
+                  </div>
+                  <ng-container *ngIf="imageEntityError != ''">
+                    <p class="text-danger small">
+                      {{'max file size error'|translate}}
+                    </p>
+                  </ng-container>
+
+                </div>
+
+                <div *ngIf="formError!=''" class="form-group text-danger">
+                  {{formError}}
+                </div>
+
+                <div class="form-group m-0">
+                  <button [disabled]="!formEntityEdit.valid||loadingForm" type="submit" class="btn btn-primary btn-block">
+                    {{'save'|translate}}<img *ngIf="loadingForm"  class=" font-weight-bold ml-auto loader-min" src="assets/img/spinner.gif" />
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+        </div>
+      </ng-template>
+      <!-- template end entity -->
+
+      <!-- template flash message -->
+      <ng-template #templateFlashMessage>
+        <div class="modal-header login">
+          <img src="assets/img/lepoint.png" class="" style="width: 100px;height: 50px" />
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modalFlashMessage.hide()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body bg-white ">
+          <alert *ngIf="alertStatus" type="info" [dismissOnTimeout]="5000">
+            <strong>{{alertMsg}}!</strong>
+          </alert>
+
+          <div class="card fat">
+            <div class="card-body">
+              <h4 class="card-title">{{'flash message'|translate}}</h4>
+              <form  [formGroup]="formFlashMessage" (ngSubmit)="updateFlashMessage()">
+                <div class="form-group">
+                  <label for="adv_msg">Message </label>
+                  <textarea id="adv_msg" class="form-control" formControlName="message" name="message" autofocus> </textarea>
+                </div>
+
+
+                <div *ngIf="formFlashMessageError!=''" class="form-group text-danger">
+                  {{formFlashMessageError}}
+                </div>
+
+                <div class="form-group m-0">
+                  <button [disabled]="!formFlashMessage.valid||loadingFormFlashMessage" type="submit" class="btn btn-primary btn-block">
+                    {{'save'|translate}}<img alt="" *ngIf="loadingFormFlashMessage"  class=" font-weight-bold ml-auto loader-min" src="assets/img/spinner.gif" />
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+        </div>
+      </ng-template>
+      <!-- template end flash message -->
+
+      <!-- template edit menu -->
+      <ng-template #templateMenuEdit>
+        <div class="modal-header login">
+          <img src="assets/img/lepoint.png" class="" style="width: 100px;height: 50px" />
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modalMenuEdit.hide()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body bg-white ">
+          <alert *ngIf="alertStatus" type="info" [dismissOnTimeout]="5000">
+            <strong>{{alertMsg}}!</strong>
+          </alert>
+
+          <div class="card fat">
+            <div class="card-body">
+              <h4 class="card-title">{{'edit menu'|translate}}</h4>
+              <form  [formGroup]="formMenuEdit" (ngSubmit)="editMenu()">
+                <div class="form-group">
+                  <label for="menu_nameEdit">{{'name'|translate}} *</label>
+                  <input id="menu_nameEdit" type="text" class="form-control" formControlName="name" name="name" required autofocus>
+                  <div  *ngIf="f22.name.invalid && f22.name.touched && f22.name.errors?.minlength" class="text-danger">
+                    {{'name error'|translate}}
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="menu_descriptionEdit">{{'description'|translate}} *</label>
+                  <textarea  id="menu_descriptionEdit" class="form-control" formControlName="description" name="description"></textarea>
+                  <div *ngIf="f22.description.invalid && f22.description.touched && f22.description.errors?.minlength"  class="text-danger">
+                    {{'name error'|translate}}
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="menu_estimate_minEdit">{{'estimate cooking time min'|translate}} (minutes) *</label>
+                  <input id="menu_estimate_minEdit" type="number" class="form-control" formControlName="estimate_min_time" name="estimate_min_time" required autofocus>
+                  <div  *ngIf="f22.estimate_min_time.invalid && f22.estimate_min_time.touched && f22.estimate_min_time.errors?.minlength" class="text-danger">
+                    {{'required field'|translate}}
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="menu_estimate_maxEdit">{{'estimate cooking time max'|translate}} (minutes) *</label>
+                  <input id="menu_estimate_maxEdit" type="number" class="form-control" formControlName="estimate_max_time" name="estimate_max_time" required autofocus>
+                  <div  *ngIf="f22.estimate_max_time.invalid && f22.estimate_max_time.touched && f22.estimate_max_time.errors?.minlength" class="text-danger">
+                    {{'required field'|translate}}
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="menu_categoriesEdit">{{'categories'|translate}} *</label>
+                  <select multiple id="menu_categoriesEdit" class="form-control" formControlName="categories" name="categories" required>
+                    <ng-container *ngFor="let cat of menuCategories">
+                      <option *ngIf="currentLang == 'fr'"  value="{{cat.id}}">{{cat.base_category.name_fr}} </option>
+                      <option *ngIf="currentLang == 'en'"  value="{{cat.id}}">{{cat.base_category.name_en}} </option>
+                    </ng-container>
+                  </select>
+                  <div *ngIf="f22.categories.invalid && f22.categories.touched && f22.categories.errors?.required" class="text-danger">
+                    {{'required field'|translate}}
+
+                  </div>
+                </div>
+
+
+
+                <div class="form-group">
+                  <label for="menu_priceEdit">{{'price'|translate}} *</label>
+                  <input type="number" id="menu_priceEdit" class="form-control" formControlName="price" name="price" required/>
+                  <div *ngIf="f22.price.invalid && f22.price.touched && f22.price.errors?.minlength"  class="text-danger">
+                    {{'price error'|translate}}
+                  </div>
+                </div>
+
+
+                <div class="form-group form-check">
+                  <input type="checkbox" formControlName="is_day_menu" name="is_day_menu" id="menu_is_day_menuEdit" class="form-check-input" />
+                  <label for="menu_is_day_menuEdit" class="form-check-label">{{'day menu'|translate}}</label>
+                </div>
+
+                <label for="menu_pictureEdit">{{'picture'|translate}} *</label>
+
+                <div class="form-group">
+                  <input id="menu_pictureEdit" class="form-control" type="file" accept="image/*" (change)="showPreview2Edit($event)" />
+
+                  <!-- Image Preview -->
+                  <div  class="imagePreview" *ngIf="imageMenuURLEdit && imageMenuURLEdit !== ''">
+                    <img style="width: 200px;height: 170px" class="img-thumbnail img-fluid img-profile-preview" [src]="imageMenuURLEdit" height="170px" width="200px">
+                  </div>
+                  <ng-container *ngIf="imageMenuErrorEdit != ''">
+                    <p class="text-danger small">
+                      {{'max file size error'|translate}}
+                    </p>
+                  </ng-container>
+
+                </div>
+
+                <div *ngIf="formError2Edit!=''" class="form-group text-danger">
+                  {{formError2Edit}}
+                </div>
+
+                <div class="form-group m-0">
+                  <button [disabled]="!formMenuEdit.valid||loadingFormMenuEdit" type="submit" class="btn btn-primary btn-block">
+                    {{'save'|translate}}<img alt="" *ngIf="loadingFormMenuEdit"  class=" font-weight-bold ml-auto loader-min" src="assets/img/spinner.gif" />
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+        </div>
+      </ng-template>
+      <!-- template end edit menu -->
+
+
+      <!-- template add menu -->
+      <ng-template #templateAddMenu>
+        <div class="modal-header login">
+          <img src="assets/img/lepoint.png" class="" style="width: 100px;height: 50px" />
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modalAddMenu.hide()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body bg-white ">
+          <alert *ngIf="alertStatus" type="info" [dismissOnTimeout]="5000">
+            <strong>{{alertMsg}}!</strong>
+          </alert>
+
+          <div class="card fat">
+            <div class="card-body">
+              <h4 class="card-title">{{'new menu'|translate}}</h4>
+              <form  [formGroup]="formMenu" (ngSubmit)="addMenu()">
+                <div class="form-group">
+                  <label for="menu_name">{{'name'|translate}} *</label>
+                  <input id="menu_name" type="text" class="form-control" formControlName="name" name="name" required autofocus>
+                  <div  *ngIf="f3.name.invalid && f3.name.touched && f3.name.errors?.minlength" class="text-danger">
+                    {{'name error'|translate}}
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="menu_description">{{'description'|translate}} *</label>
+                  <textarea  id="menu_description" class="form-control" formControlName="description" name="description"></textarea>
+                  <div *ngIf="f3.description.invalid && f3.description.touched && f3.description.errors?.minlength"  class="text-danger">
+                    {{'name error'|translate}}
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="menu_estimate_min">{{'estimate cooking time min'|translate}} (minutes) *</label>
+                  <input id="menu_estimate_min" type="number" class="form-control" formControlName="estimate_min_time" name="estimate_min_time" required autofocus>
+                  <div  *ngIf="f3.estimate_min_time.invalid && f3.estimate_min_time.touched && f3.estimate_min_time.errors?.minlength" class="text-danger">
+                    {{'required field'|translate}}
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="menu_estimate_max">{{'estimate cooking time max'|translate}} (minutes) *</label>
+                  <input id="menu_estimate_max" type="number" class="form-control" formControlName="estimate_max_time" name="estimate_max_time" required autofocus>
+                  <div  *ngIf="f3.estimate_max_time.invalid && f3.estimate_max_time.touched && f3.estimate_max_time.errors?.minlength" class="text-danger">
+                    {{'required field'|translate}}
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="menu_categories">{{'categories'|translate}} *</label>
+                  <select multiple id="menu_categories" class="form-control" formControlName="categories" name="categories" required>
+                    <ng-container *ngFor="let cat of menuCategories">
+                      <option *ngIf="currentLang == 'fr'"  value="{{cat.id}}">{{cat.base_category.name_fr}} </option>
+                      <option *ngIf="currentLang == 'en'"  value="{{cat.id}}">{{cat.base_category.name_en}} </option>
+                    </ng-container>
+                  </select>
+                  <div *ngIf="f3.categories.invalid && f3.categories.touched && f3.categories.errors?.required" class="text-danger">
+                    {{'required field'|translate}}
+
+                  </div>
+                </div>
+
+
+
+                <div class="form-group">
+                  <label for="menu_price">{{'price'|translate}} *</label>
+                  <input type="number" id="menu_price" class="form-control" formControlName="price" name="price" required/>
+                  <div *ngIf="f3.price.invalid && f3.price.touched && f3.price.errors?.minlength"  class="text-danger">
+                    {{'price error'|translate}}
+                  </div>
+                </div>
+
+
+                <div class="form-group form-check">
+                  <input type="checkbox" formControlName="is_day_menu" name="is_day_menu" id="menu_is_day_menu" class="form-check-input" />
+                  <label for="menu_is_day_menu" class="form-check-label">{{'day menu'|translate}}</label>
+                </div>
+
+                <label for="menu_picture">{{'picture'|translate}} *</label>
+
+                <div class="form-group">
+                  <input id="menu_picture" class="form-control" type="file" accept="image/*" (change)="showPreview2($event)" />
+
+                  <!-- Image Preview -->
+                  <div  class="imagePreview" *ngIf="imageMenuURL && imageMenuURL !== ''">
+                    <img style="width: 200px;height: 170px" class="img-thumbnail img-fluid img-profile-preview" [src]="imageMenuURL" height="170px" width="200px">
+                  </div>
+                  <ng-container *ngIf="imageMenuError != ''">
+                    <p class="text-danger small">
+                      {{'max file size error'|translate}}
+                    </p>
+                  </ng-container>
+
+                </div>
+
+                <div *ngIf="formError2!=''" class="form-group text-danger">
+                  {{formError2}}
+                </div>
+
+                <div class="form-group m-0">
+                  <button [disabled]="!formMenu.valid||loadingFormMenu" type="submit" class="btn btn-primary btn-block">
+                    {{'save'|translate}}<img alt="" *ngIf="loadingFormMenu"  class=" font-weight-bold ml-auto loader-min" src="assets/img/spinner.gif" />
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+        </div>
+      </ng-template>
+      <!-- template add menu -->
+
+      <!-- template order show-->
+      <ng-template #templateOrder>
+        <div class="modal-header login">
+          <img src="assets/img/lepoint.png" class="" style="width: 100px;height: 50px" />
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modalRefOrder.hide()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body bg-white ">
+          <alert *ngIf="globalAlertStatus != ''" type="info" [dismissOnTimeout]="5000">
+            <strong>{{globalAlertStatus}}!</strong>
+          </alert>
+
+          <div class="card fat">
+            <div class="card-body" style="padding: 0!important;">
+              <div class="p-1 osahan-cart-item">
+
+                <div class="shadow bg-white rounded p-3 clearfix">
+                  <img alt="osahan" style="width: 40px; height: 40px" src="{{openOrder.entity.global_info.image}}" class="mr-3 rounded-circle img-fluid">
+                  <div class="d-flex flex-column">
+                    <h6 class="mb-1 font-weight-bold">{{openOrder.entity.global_info.name}}</h6>
+                    <p class="mb-0 small text-muted"><i class="feather-map-pin"></i> {{openOrder.entity.location.city}}, {{openOrder.entity.location.street}}, {{openOrder.entity.location.street_detail}}</p>
+                    <p class="mb-0 small text-muted font-weight-bold">ref: {{openOrder.reference}}</p>
+
+                  </div>
+
+                  <div *ngFor="let it of openOrder.order_items" class="gold-members d-flex align-items-center justify-content-between  py-2 border-bottom">
+
+                    <div class="media align-items-center">
+                      <div class="mr-2 text-success">·</div>
+                      <div class="media-body">
+                        <p class="m-0">{{it.menu.name}}
+                        </p>
+                      </div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                      <span class="count-number float-right"><input class="count-number-input" type="text" readonly="" value="{{it.quantity}}"></span>
+                      <p class="text-gray mb-0 float-right ml-2 text-muted small">XAF {{it.menu.price}}</p>
+                    </div>
+                  </div>
+                  <p class="mb-1 font-weight-bold">{{'to pay'|translate}} <span class="float-right text-dark">XAF {{openOrder.amount}}</span></p>
+                  <hr>
+
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+      </ng-template>
+      <!-- template end order show-->
+
+      <!-- template add advert -->
+      <ng-template #templateAddAdvert>
+        <div class="modal-header login">
+          <img src="assets/img/lepoint.png" class="" style="width: 100px;height: 50px" />
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modalAddAdvert.hide()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body bg-white ">
+          <alert *ngIf="alertStatus" type="info" [dismissOnTimeout]="5000">
+            <strong>{{alertMsg}}!</strong>
+          </alert>
+
+          <div class="card fat">
+            <div class="card-body">
+              <h4 class="card-title">{{'new advert'|translate}}</h4>
+              <form  [formGroup]="formAdvert" (ngSubmit)="addAdvert()">
+                <div class="form-group">
+                  <label for="title">{{'title'|translate}} *</label>
+                  <input id="title" type="text" class="form-control" formControlName="title" name="title" required autofocus>
+                  <div  *ngIf="f4.title.invalid && f4.title.touched && f4.title.errors?.minlength" class="text-danger">
+                    {{'name error'|translate}}
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="ad_description">{{'content'|translate}} *</label>
+                  <textarea  id="ad_description" class="form-control" formControlName="content" name="content"></textarea>
+                  <div *ngIf="f4.content.invalid && f4.content.touched && f4.content.errors?.minlength"  class="text-danger">
+                    {{'name error'|translate}}
+                  </div>
+                </div>
+
+                <label for="adv_file">{{'file'|translate}} <a href="javascript:void(0)" (click)="clearAdvertFile()" class="btn btn-sm btn-outline-primary"><span style="font-size: 12px;margin-left: 30px" class="feather-trash"></span></a></label>
+
+                <div class="form-group">
+                  <input id="adv_file" class="form-control" type="file" accept="image/*,application/pdf" (change)="showPreviewAdvertFile($event)" />
+
+                  <!-- Image Preview -->
+                  <div  class="imagePreview" *ngIf="formAdvertFile !== null && showExtensions2.includes(formAdvertFile.type) && imageAdvertURL && imageAdvertURL !== '' && !advertFileIsclear">
+                    <img style="width: 200px;height: 170px" class="img-thumbnail img-fluid img-profile-preview" [src]="imageAdvertURL" height="170px" width="200px">
+                  </div>
+                  <div  class="imagePreview" *ngIf="formAdvertFile !== null && !showExtensions2.includes(formAdvertFile.type) && imageAdvertURL && imageAdvertURL !== '' && !advertFileIsclear">
+                    <img style="width: 200px;height: 170px" class="img-thumbnail img-fluid img-profile-preview" src="assets/img/pdf.png" height="170px" width="200px">
+                  </div>
+                  <ng-container *ngIf="imageAdvertError != ''">
+                    <p class="text-danger small">
+                      {{'max file size error'|translate}}
+                    </p>
+                  </ng-container>
+
+                </div>
+
+                <div *ngIf="formAdvertError!=''" class="form-group text-danger">
+                  {{formAdvertError}}
+                </div>
+
+                <div class="form-group m-0">
+                  <button [disabled]="!formAdvert.valid||loadingFormAdvert" type="submit" class="btn btn-primary btn-block">
+                    {{'save'|translate}}<img alt="" *ngIf="loadingFormAdvert"  class=" font-weight-bold ml-auto loader-min" src="assets/img/spinner.gif" />
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+        </div>
+      </ng-template>
+      <!-- template add advert -->
+
+      <!-- template edit advert -->
+      <ng-template #templateEditAdvert>
+        <div class="modal-header login">
+          <img src="assets/img/lepoint.png" class="" style="width: 100px;height: 50px" />
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modalEditAdvert.hide()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body bg-white ">
+          <alert *ngIf="alertStatus" type="info" [dismissOnTimeout]="5000">
+            <strong>{{alertMsg}}!</strong>
+          </alert>
+
+          <div class="card fat">
+            <div class="card-body">
+              <h4 class="card-title">{{'edit advert'|translate}}</h4>
+              <form  [formGroup]="formAdvertEdit" (ngSubmit)="updateAdvert()">
+                <div class="form-group">
+                  <label for="adv-title">{{'title'|translate}} *</label>
+                  <input id="adv-title" type="text" class="form-control" formControlName="title" name="title" required autofocus>
+                  <div  *ngIf="f44.title.invalid && f44.title.touched && f44.title.errors?.minlength" class="text-danger">
+                    {{'name error'|translate}}
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="adv_description">{{'content'|translate}} *</label>
+                  <textarea  id="adv_description" class="form-control" formControlName="content" name="content"></textarea>
+                  <div *ngIf="f44.content.invalid && f44.content.touched && f44.content.errors?.minlength"  class="text-danger">
+                    {{'name error'|translate}}
+                  </div>
+                </div>
+
+                <label for="adv_file2">{{'file'|translate}} <a href="javascript:void(0)" (click)="clearAdvertEditFile()" class="btn btn-sm btn-outline-primary"><span style="font-size: 12px;margin-left: 30px" class="feather-trash"></span></a> </label>
+
+                <div class="form-group">
+                  <input id="adv_file2" class="form-control" type="file" accept="image/*,application/pdf" (change)="showPreviewAdvertFileEdit($event)" />
+
+                  <!-- Image Preview -->
+
+                  <div  class="imagePreview" *ngIf="formAdvertEditFile == null && openAdvert.file != null && !advertFileEditIsclear">
+                    <img *ngIf="openAdvert.file.extension != '.pdf'" style="width: 200px;height: 170px" class="img-thumbnail img-fluid img-profile-preview" [src]="openAdvert.file.path" height="170px" width="200px">
+
+                      <img  *ngIf="openAdvert.file.extension == '.pdf'" style="width: 200px;height: 170px" class="img-thumbnail img-fluid img-profile-preview" src="assets/img/pdf.png" height="170px" width="200px">
+                    <a *ngIf="openAdvert.file.extension == '.pdf'" href="{{openAdvert.file.path}}" target="_blank"><span style="font-size: 24px;margin-left: 30px" class="feather-download"></span></a>
+
+                  </div>
+                  <div  class="imagePreview" *ngIf="formAdvertEditFile != null && imageAdvertEditURL && imageAdvertEditURL !== ''">
+                    <img *ngIf="showExtensions2.includes(formAdvertEditFile.type)" style="width: 200px;height: 170px" class="img-thumbnail img-fluid img-profile-preview" [src]="imageAdvertEditURL" height="170px" width="200px">
+
+                    <img *ngIf="!showExtensions2.includes(formAdvertEditFile.type)" style="width: 200px;height: 170px" class="img-thumbnail img-fluid img-profile-preview" src="assets/img/pdf.png" height="170px" width="200px">
+
+
+                  </div>
+                  <ng-container *ngIf="imageAdvertEditError != ''">
+                    <p class="text-danger small">
+                      {{'max file size error'|translate}}
+                    </p>
+                  </ng-container>
+
+                </div>
+
+                <div *ngIf="formAdvertEditError!=''" class="form-group text-danger">
+                  {{formAdvertEditError}}
+                </div>
+
+                <div class="form-group m-0">
+                  <button [disabled]="!formAdvertEdit.valid||loadingFormAdvertEdit" type="submit" class="btn btn-primary btn-block">
+                    {{'save'|translate}}<img alt="" *ngIf="loadingFormAdvertEdit"  class=" font-weight-bold ml-auto loader-min" src="assets/img/spinner.gif" />
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+        </div>
+      </ng-template>
+      <!-- template edit advert -->
+
+      <!-- template add product -->
+      <ng-template #templateAddProduct>
+        <div class="modal-header login">
+          <img src="assets/img/lepoint.png" class="" style="width: 100px;height: 50px" />
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modalAddProduct.hide()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body bg-white ">
+          <alert *ngIf="alertStatus" type="info" [dismissOnTimeout]="5000">
+            <strong>{{alertMsg}}!</strong>
+          </alert>
+
+          <div class="card fat">
+            <div class="card-body">
+              <h4 class="card-title">{{'new product'|translate}}</h4>
+              <form  [formGroup]="formProduct" (ngSubmit)="addProduct()">
+                <div class="form-group">
+                  <label for="pro_name">{{'name'|translate}} *</label>
+                  <input id="pro_name" type="text" class="form-control" formControlName="name" name="name" required autofocus>
+                  <div  *ngIf="f5.name.invalid && f5.name.touched && f5.name.errors?.minlength" class="text-danger">
+                    {{'name error'|translate}}
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="pro_description">{{'description'|translate}} *</label>
+                  <textarea  id="pro_description" class="form-control" formControlName="description" name="description"></textarea>
+                  <div *ngIf="f5.description.invalid && f5.description.touched && f5.description.errors?.minlength"  class="text-danger">
+                    {{'name error'|translate}}
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="pro_price">{{'price'|translate}} *</label>
+                  <input type="number" id="pro_price" class="form-control" formControlName="price" name="price" required/>
+                  <div *ngIf="f5.price.invalid && f5.price.touched && f5.price.errors?.minlength"  class="text-danger">
+                    {{'price error'|translate}}
+                  </div>
+                </div>
+
+
+                <div class="form-group form-check">
+                  <input type="checkbox" formControlName="availability" name="availability" id="pro_availability" class="form-check-input" [ngModel]="true"  />
+                  <label for="pro_availability" class="form-check-label">{{'available'|translate}}</label>
+                </div>
+
+                <label for="pro_picture">{{'picture'|translate}} *</label>
+
+                <div class="form-group">
+                  <input id="pro_picture" class="form-control" type="file" accept="image/*" (change)="showPreviewProduct($event)" />
+
+                  <!-- Image Preview -->
+                  <div  class="imagePreview" *ngIf="imageProductURL && imageProductURL !== ''">
+                    <img style="width: 200px;height: 170px" class="img-thumbnail img-fluid img-profile-preview" [src]="imageProductURL" height="170px" width="200px">
+                  </div>
+                  <ng-container *ngIf="imageProductError != ''">
+                    <p class="text-danger small">
+                      {{'max file size error'|translate}}
+                    </p>
+                  </ng-container>
+
+                </div>
+
+                <div *ngIf="formProductError!=''" class="form-group text-danger">
+                  {{formProductError}}
+                </div>
+
+                <div class="form-group m-0">
+                  <button [disabled]="!formProduct.valid||loadingFormProduct" type="submit" class="btn btn-primary btn-block">
+                    {{'save'|translate}}<img alt="" *ngIf="loadingFormProduct"  class=" font-weight-bold ml-auto loader-min" src="assets/img/spinner.gif" />
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+        </div>
+      </ng-template>
+      <!-- template add product -->
+
+      <!-- template edit product -->
+      <ng-template #templateEditProduct>
+        <div class="modal-header login">
+          <img src="assets/img/lepoint.png" class="" style="width: 100px;height: 50px" />
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modalProductEdit.hide()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body bg-white ">
+          <alert *ngIf="alertStatus" type="info" [dismissOnTimeout]="5000">
+            <strong>{{alertMsg}}!</strong>
+          </alert>
+
+          <div class="card fat">
+            <div class="card-body">
+              <h4 class="card-title">{{'edit product'|translate}}</h4>
+              <form  [formGroup]="formProductEdit" (ngSubmit)="editProduct()">
+                <div class="form-group">
+                  <label for="pro_name2">{{'name'|translate}} *</label>
+                  <input id="pro_name2" type="text" class="form-control" formControlName="name" name="name" required autofocus>
+                  <div  *ngIf="f55.name.invalid && f55.name.touched && f55.name.errors?.minlength" class="text-danger">
+                    {{'name error'|translate}}
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="pro_description2">{{'description'|translate}} *</label>
+                  <textarea  id="pro_description2" class="form-control" formControlName="description" name="description"></textarea>
+                  <div *ngIf="f55.description.invalid && f55.description.touched && f55.description.errors?.minlength"  class="text-danger">
+                    {{'name error'|translate}}
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="pro_price2">{{'price'|translate}} *</label>
+                  <input type="number" id="pro_price2" class="form-control" formControlName="price" name="price" required/>
+                  <div *ngIf="f55.price.invalid && f55.price.touched && f55.price.errors?.minlength"  class="text-danger">
+                    {{'price error'|translate}}
+                  </div>
+                </div>
+
+
+                <div class="form-group form-check">
+                  <input type="checkbox" formControlName="availability" name="availability" id="pro_availability2" class="form-check-input" />
+                  <label for="pro_availability2" class="form-check-label">{{'available'|translate}}</label>
+                </div>
+
+                <label for="pro_picture2">{{'picture'|translate}} *</label>
+
+                <div class="form-group">
+                  <input id="pro_picture2" class="form-control" type="file" accept="image/*" (change)="showPreviewProductEdit($event)" />
+
+                  <!-- Image Preview -->
+                  <div  class="imagePreview" *ngIf="imageProductEditURL && imageProductEditURL !== ''">
+                    <img style="width: 200px;height: 170px" class="img-thumbnail img-fluid img-profile-preview" [src]="imageProductEditURL" height="170px" width="200px">
+                  </div>
+                  <ng-container *ngIf="imageProductEditError != ''">
+                    <p class="text-danger small">
+                      {{'max file size error'|translate}}
+                    </p>
+                  </ng-container>
+
+                </div>
+
+                <div *ngIf="formProductEditError!=''" class="form-group text-danger">
+                  {{formProductEditError}}
+                </div>
+
+                <div class="form-group m-0">
+                  <button [disabled]="!formProductEdit.valid||loadingFormProductEdit" type="submit" class="btn btn-primary btn-block">
+                    {{'save'|translate}}<img alt="" *ngIf="loadingFormProductEdit"  class=" font-weight-bold ml-auto loader-min" src="assets/img/spinner.gif" />
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+        </div>
+      </ng-template>
+      <!-- template edit product -->
+
+      <!-- template add manger -->
+      <ng-template #templateAddManager>
+        <div class="modal-header login">
+          <img src="assets/img/lepoint.png" class="" style="width: 100px;height: 50px" />
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modalManager.hide()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body bg-white ">
+          <alert *ngIf="alertStatus" type="info" [dismissOnTimeout]="5000">
+            <strong>{{alertMsg}}!</strong>
+          </alert>
+
+          <div class="card fat">
+            <div class="card-body">
+              <h4 class="card-title">{{'add manager'|translate}}</h4>
+              <form  [formGroup]="formManager" (ngSubmit)="addManager()">
+                <div class="form-group">
+                  <label for="manager_email">{{'email'|translate}} *</label>
+                  <input id="manager_email" type="text" class="form-control" formControlName="email" name="email" required autofocus>
+                  <div  *ngIf="f6.email.invalid && f6.email.touched && f6.email.errors?.email" class="text-danger">
+                    {{'email error'|translate}}
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="manager_type">Type *</label>
+                  <select id="manager_type" class="form-control" formControlName="type" name="type" required>
+                    <option  value="11" selected>{{'manager'|translate}} </option>
+                  </select>
+                  <div *ngIf="f6.type.invalid && f6.type.touched && f6.type.errors?.required" class="text-danger">
+                    {{'required field'|translate}}
+
+                  </div>
+                </div>
+
+
+                <div *ngIf="formManagerError!=''" class="form-group text-danger">
+                  {{formManagerError}}
+                </div>
+
+                <div class="form-group m-0">
+                  <button [disabled]="!formManager.valid||loadingFormManager" type="submit" class="btn btn-primary btn-block">
+                    {{'save'|translate}}<img alt="" *ngIf="loadingFormManager"  class=" font-weight-bold ml-auto loader-min" src="assets/img/spinner.gif" />
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+        </div>
+      </ng-template>
+      <!-- template add manger -->
+
+      <!-- template add top manger -->
+      <ng-template #templateAddTopManager>
+        <div class="modal-header login">
+          <img src="assets/img/lepoint.png" class="" style="width: 100px;height: 50px" />
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modalTopManager.hide()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body bg-white ">
+          <alert *ngIf="alertStatus" type="info" [dismissOnTimeout]="5000">
+            <strong>{{alertMsg}}!</strong>
+          </alert>
+
+          <div class="card fat">
+            <div class="card-body">
+              <h4 class="card-title">{{'add top manager'|translate}}</h4>
+              <form  [formGroup]="formTopManager" (ngSubmit)="addTopManager()">
+                <div class="form-group">
+                  <label for="manager_email1">{{'email'|translate}} *</label>
+                  <input id="manager_email1" type="text" class="form-control" formControlName="email" name="email" required autofocus>
+                  <div  *ngIf="f66.email.invalid && f66.email.touched && f66.email.errors?.email" class="text-danger">
+                    {{'email error'|translate}}
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="manager_type1">Type *</label>
+                  <select id="manager_type1" class="form-control" formControlName="type" name="type" required>
+                    <option  value="1" selected>{{'top manager'|translate}} </option>
+                  </select>
+                  <div *ngIf="f66.type.invalid && f66.type.touched && f66.type.errors?.required" class="text-danger">
+                    {{'required field'|translate}}
+
+                  </div>
+                </div>
+
+
+                <div *ngIf="formTopManagerError!=''" class="form-group text-danger">
+                  {{formTopManagerError}}
+                </div>
+
+                <div class="form-group m-0">
+                  <button [disabled]="!formTopManager.valid||loadingFormTopManager" type="submit" class="btn btn-primary btn-block">
+                    {{'save'|translate}}<img alt="" *ngIf="loadingFormTopManager"  class=" font-weight-bold ml-auto loader-min" src="assets/img/spinner.gif" />
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+        </div>
+      </ng-template>
+      <!-- template add top manger -->
+
+      <!-- template show top manger -->
+      <ng-template #templateShowTopManager>
+        <div class="modal-header login">
+          <img src="assets/img/lepoint.png" class="" style="width: 100px;height: 50px" />
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modalShowTopManager.hide()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body bg-white ">
+          <alert *ngIf="alertStatus" type="info" [dismissOnTimeout]="5000">
+            <strong>{{alertMsg}}!</strong>
+          </alert>
+
+          <div class="card fat">
+            <div class="card-body">
+              <h4 class="card-title">{{'top manager or owner'|translate}}</h4>
+              <div class="p-2 border-bottom menu-list" *ngIf="entity.top_manager != null" >
+                 <span *ngIf="userType == 0" class="float-right">
+                          <button class="btn btn-secondary btn-sm dropdown-toggle small small-btn" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Action
+                          </button>
+                          <div class="dropdown-menu dropdown-action" style="width: 100px">
+                           <a (click)="removeTopManager(entity.top_manager.id)" class="dropdown-item" href="javascript:void(0)">{{'remove'|translate}}</a>
+                          </div>
+
+                        </span>
+                <div class="media">
+                  <img src="{{entity.top_manager.picture}}" alt="" class="mr-3 rounded-pill ">
+                  <div class="media-body">
+                    <h6 class="mb-1">{{entity.top_manager.name}} {{entity.top_manager.surname}}
+                    </h6>
+                    <p class="text-muted mb-0"><i class="feather-at-sign"></i>{{entity.top_manager.email}}</p>
+                    <p class="text-muted mb-0"><i class="feather-phone"></i>{{entity.top_manager.phone}}</p>
+                    <p *ngIf="entity.top_manager.type === 1" class="text-muted mb-0 font-weight-bold"><i class="feather-user"></i>{{'account top manager'|translate}}</p>
+                  </div>
+                </div>
+              </div>
+              <div class="p-2 border-bottom menu-list" *ngIf="entity.owner != null" >
+                <div class="media">
+                  <img src="{{entity.owner.picture}}" alt="" class="mr-3 rounded-pill ">
+                  <div class="media-body">
+                    <h6 class="mb-1">{{entity.owner.name}} {{entity.owner.surname}}
+                    </h6>
+                    <p class="text-muted mb-0"><i class="feather-at-sign"></i>{{entity.owner.email}}</p>
+                    <p class="text-muted mb-0"><i class="feather-phone"></i>{{entity.owner.phone}}</p>
+                    <p *ngIf="entity.owner.type === 10" class="text-muted mb-0 font-weight-bold"><i class="feather-user"></i>{{'account owner'|translate}}</p>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </ng-template>
+      <!-- template show top manger -->
+
+      <!-- template add pay -->
+      <ng-template #templateAddPay>
+        <div class="modal-header login">
+          <img src="assets/img/lepoint.png" class="" style="width: 100px;height: 50px" />
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modalAddPay.hide()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body bg-white ">
+          <alert *ngIf="alertStatus" type="info" [dismissOnTimeout]="5000">
+            <strong>{{alertMsg}}!</strong>
+          </alert>
+
+          <div class="card fat">
+            <div class="card-body">
+              <h4 class="card-title">{{'payment method'|translate}}</h4>
+              <form  [formGroup]="formAddPay" (ngSubmit)="addPay()">
+                <div class="form-group">
+                  <label for="pay_mode">Type *</label>
+                  <select id="pay_mode" class="form-control" formControlName="pay_mode" name="pay_mode" required>
+                    <option  *ngFor="let p of payModes" value="{{p.id}}">{{p.name}} </option>
+                  </select>
+                  <div *ngIf="f7.pay_mode.invalid && f7.pay_mode.touched && f7.pay_mode.errors?.required" class="text-danger">
+                    {{'required field'|translate}}
+
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="detail_one">{{'phone'|translate}} 1 *</label>
+                  <input id="detail_one" type="text" class="form-control" formControlName="detail_one" name="detail_one" required autofocus>
+                  <div  *ngIf="f7.detail_one.invalid && f7.detail_one.touched && f7.detail_one.errors?.required" class="text-danger">
+                    {{'required field'|translate}}
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="detail_two">{{'phone'|translate}} 2</label>
+                  <input id="detail_two" type="text" class="form-control" formControlName="detail_two" name="detail_two" autofocus>
+                </div>
+
+
+                <div *ngIf="formAddPayError!=''" class="form-group text-danger">
+                  {{formAddPayError}}
+                </div>
+
+                <div class="form-group m-0">
+                  <button [disabled]="!formAddPay.valid||loadingFormAddPay" type="submit" class="btn btn-primary btn-block">
+                    {{'save'|translate}}<img alt="" *ngIf="loadingFormAddPay"  class=" font-weight-bold ml-auto loader-min" src="assets/img/spinner.gif" />
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+        </div>
+      </ng-template>
+      <!-- template add pay -->
+
+      <!-- template edit pay -->
+      <ng-template #templateEditPay>
+        <div class="modal-header login">
+          <img src="assets/img/lepoint.png" class="" style="width: 100px;height: 50px" />
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modalEditPay.hide()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body bg-white ">
+          <alert *ngIf="alertStatus" type="info" [dismissOnTimeout]="5000">
+            <strong>{{alertMsg}}!</strong>
+          </alert>
+
+          <div class="card fat">
+            <div class="card-body">
+              <h4 class="card-title">{{'payment method'|translate}}</h4>
+              <form  [formGroup]="formEditPay" (ngSubmit)="editPay()">
+                <div class="form-group">
+                  <label for="pay_mode1">Type *</label>
+                  <select id="pay_mode1" class="form-control" formControlName="pay_mode" name="pay_mode" required>
+                    <option  *ngFor="let p of payModes" value="{{p.id}}">{{p.name}} </option>
+                  </select>
+                  <div *ngIf="f77.pay_mode.invalid && f77.pay_mode.touched && f77.pay_mode.errors?.required" class="text-danger">
+                    {{'required field'|translate}}
+
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="detail_one1">{{'phone'|translate}} 1 *</label>
+                  <input id="detail_one1" type="text" class="form-control" formControlName="detail_one" name="detail_one" required autofocus>
+                  <div  *ngIf="f77.detail_one.invalid && f77.detail_one.touched && f77.detail_one.errors?.required" class="text-danger">
+                    {{'required field'|translate}}
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="detail_two1">{{'phone'|translate}} 2</label>
+                  <input id="detail_two1" type="text" class="form-control" formControlName="detail_two" name="detail_two" autofocus>
+                </div>
+
+
+                <div *ngIf="formEditPayError!=''" class="form-group text-danger">
+                  {{formEditPayError}}
+                </div>
+
+                <div class="form-group m-0">
+                  <button [disabled]="!formEditPay.valid||loadingFormEditPay" type="submit" class="btn btn-primary btn-block">
+                    {{'update'|translate}}<img alt="" *ngIf="loadingFormEditPay"  class=" font-weight-bold ml-auto loader-min" src="assets/img/spinner.gif" />
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+        </div>
+      </ng-template>
+      <!-- template edit pay -->
+
+
+
+
+    </div>
+
+    <app-footer></app-footer>
+  </div>
+</div>
+

@@ -1,0 +1,21 @@
+<div class="fixed-bottom-bar">
+<div class="osahan-home-page">
+  <div class="bg-primary pt-1 pb-1 pr-2 pl-2">
+    <app-header></app-header>
+
+  </div>
+
+
+  <div class="bg-light home-list main-content">
+
+    <alert *ngIf="globalAlertStatus != ''" type="info" [dismissOnTimeout]="10000">
+      <strong>{{globalAlertStatus}}</strong>
+    </alert>
+    <app-home-list></app-home-list>
+
+  </div>
+
+  <app-footer></app-footer>
+</div>
+
+</div>
