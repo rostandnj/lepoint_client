@@ -11,6 +11,7 @@ import {ConstantsService} from '../service/constants-service';
 export class BaseHomeComponent implements OnInit {
   loading = false;
   token: string;
+  position = {};
 
   constructor(private actRoute: ActivatedRoute, private authService: AuthService,
               private constantService: ConstantsService) {

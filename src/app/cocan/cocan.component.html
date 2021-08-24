@@ -1,0 +1,161 @@
+<div class="fixed-bottom-bar">
+  <div class="osahan-home-page">
+    <div class=" p-2" style="background: linear-gradient(45deg, #248964, #cf5f57, #f3dd9f);">
+      <app-header></app-header>
+
+    </div>
+
+    <div class="bg-light home-list main-content" >
+
+      <alert *ngIf="globalAlertStatus != ''" type="info" [dismissOnTimeout]="10000">
+        <strong>{{globalAlertStatus}}</strong>
+      </alert>
+      <div class="row container-fluid mt-4" >
+       <div class="col-md-12" style="text-align: center">
+         <h6>{{'cocan_title'|translate}} <a style="font-size: 11px" target="_blank" class="text-danger font-weight-bold ml-auto" href="{{configLinkCocan}}"><i class="feather-download"></i>qr-code</a></h6>
+       </div>
+      </div>
+
+
+
+
+      <div class="row container-fluid">
+        <div class="col-lg-4 col-md-4 col-sm-6 mt-4 mb-4">
+          <div class="list-card bg-white h-100 rounded overflow-hidden position-relative shadow-sm">
+            <div class="list-card-image">
+              <div class="star position-absolute"><span class="badge badge-cocan">{{'news'|translate}}</span></div>
+              <div style="display: none" class="favourite-heart text-danger position-absolute"><a href="#"></a></div>
+              <a routerLink="/cocan">
+                <img style="width: 280px;height: 250px" src="assets/img/news.png" alt="COCAN" class="img-fluid item-img w-100">
+              </a>
+            </div>
+
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-6 mt-4 mb-4">
+          <div class="list-card bg-white h-100 rounded overflow-hidden position-relative shadow-sm">
+            <div class="list-card-image">
+              <div class="star position-absolute"><span class="badge badge-cocan">{{'teams'|translate}}</span></div>
+              <div style="display: none" class="favourite-heart text-danger position-absolute"><a href="#"></a></div>
+              <a routerLink="/cocan">
+                <img style="width: 280px;height: 250px" src="assets/img/team.jpeg" alt="COCAN" class="img-fluid item-img w-100">
+              </a>
+            </div>
+
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-6 mt-4 mb-4">
+          <div class="list-card bg-white h-100 rounded overflow-hidden position-relative shadow-sm">
+            <div class="list-card-image">
+              <div class="star position-absolute"><span class="badge badge-cocan">{{'groups'|translate}}</span></div>
+              <div style="display: none" class="favourite-heart text-danger position-absolute"><a href="#"></a></div>
+              <a routerLink="/cocan">
+                <img style="width: 280px;height: 250px" src="assets/img/group.jpeg" alt="COCAN" class="img-fluid item-img w-100">
+              </a>
+            </div>
+
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-6 mt-4 mb-4">
+          <div class="list-card bg-white h-100 rounded overflow-hidden position-relative shadow-sm">
+            <div class="list-card-image">
+              <div class="star position-absolute"><span class="badge badge-cocan">{{'stadium'|translate}}</span></div>
+              <div style="display: none" class="favourite-heart text-danger position-absolute"><a href="#"></a></div>
+              <a routerLink="/cocan">
+                <img style="width: 280px;height: 250px" src="assets/img/stade.jpeg" alt="COCAN" class="img-fluid item-img w-100">
+              </a>
+            </div>
+
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-6 mt-4 mb-4">
+          <div class="list-card bg-white h-100 rounded overflow-hidden position-relative shadow-sm">
+            <div class="list-card-image">
+              <div class="star position-absolute"><span class="badge badge-cocan">{{'fan areas'|translate}}</span></div>
+              <div style="display: none" class="favourite-heart text-danger position-absolute"><a href="#"></a></div>
+              <a routerLink="/cocan">
+                <img style="width: 280px;height: 250px" src="assets/img/fan.jpeg" alt="COCAN" class="img-fluid item-img w-100">
+              </a>
+            </div>
+
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-6 mt-4 mb-4">
+          <div class="list-card bg-white h-100 rounded overflow-hidden position-relative shadow-sm">
+            <div class="list-card-image">
+              <div class="star position-absolute"><span class="badge badge-cocan">{{'ticket office'|translate}}</span></div>
+              <div style="display: none" class="favourite-heart text-danger position-absolute"><a href="#"></a></div>
+              <a routerLink="/cocan">
+                <img style="width: 280px;height: 250px" src="assets/img/ticket.jpeg" alt="COCAN" class="img-fluid item-img w-100">
+              </a>
+            </div>
+
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-6 mt-4 mb-4">
+          <div class="list-card bg-white h-100 rounded overflow-hidden position-relative shadow-sm">
+            <div class="list-card-image">
+              <div class="star position-absolute"><span class="badge badge-cocan">{{'partners'|translate}}</span></div>
+              <div style="display: none" class="favourite-heart text-danger position-absolute"><a href="#"></a></div>
+              <a routerLink="/cocan">
+                <img style="width: 280px;height: 250px" src="assets/img/partner.png" alt=" COCAN" class="img-fluid item-img w-100">
+              </a>
+            </div>
+
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-6 mt-4 mb-4">
+          <div class="list-card bg-white h-100 rounded overflow-hidden position-relative shadow-sm">
+            <div class="list-card-image">
+              <div class="star position-absolute"><span class="badge badge-cocan">{{'transport'|translate}}</span></div>
+              <div style="display: none" class="favourite-heart text-danger position-absolute"><a href="#"></a></div>
+              <a routerLink="/cocan">
+                <img style="width: 280px;height: 250px" src="assets/img/transport.jpeg" alt="COCAN" class="img-fluid item-img w-100">
+              </a>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div style="display: none" class="row container-fluid mt-4" >
+        <div class="col-md-12" style="text-align: center">
+          <h6>{{'news'|translate}}</h6>
+        </div>
+      </div>
+
+      <div class="mt-1" style="max-height: 280px;display: none">
+        <ngx-slick-carousel class="carousel cat-slider"
+                            #slickModal2="slick-carousel"
+                            [config]="slideConfig2">
+          <div ngxSlickItem *ngFor="let menu of actus " class="osahan-slider-item py-3 px-1">
+            <div class="list-card bg-white h-100 rounded overflow-hidden position-relative shadow-sm">
+              <div class="list-card-image">
+                <a >
+                  <img  src="assets/img/news.png" class="img-fluid item-img w-100">
+                </a>
+              </div>
+              <div class="p-2 position-relative">
+                <div class="list-card-body">
+                  <h6 class="mb-1"><a class="text-black" style="font-size: 11px">{{menu.title}}
+                  </a>
+                  </h6>
+
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </ngx-slick-carousel>
+      </div>
+
+
+
+
+
+    </div>
+
+
+
+  </div>
+</div>

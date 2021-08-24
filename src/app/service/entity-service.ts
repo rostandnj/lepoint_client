@@ -476,4 +476,8 @@ export class EntityService {
   showAdvert(data){
     return this.apiService.post(Config.showAdvert, data);
   }
+
+  updateLocation(data){
+    return this.apiService.post(Config.updateLocation, data);
+  }
 }

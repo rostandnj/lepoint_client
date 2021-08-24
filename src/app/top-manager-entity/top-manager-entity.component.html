@@ -62,6 +62,8 @@
                              <span *ngIf="ent.can_order === true" class="feather-x-circle"></span>
                              <span *ngIf="ent.can_order === false" class="feather-check-circle"></span> {{'use order system'|translate}}
                            </button>
+                            <button  class="dropdown-item btn btn-link" (click)="addLocation(ent)" ><span class="feather-map-pin"></span> {{'add location'|translate}}</button>
+
 
                           </div>
 

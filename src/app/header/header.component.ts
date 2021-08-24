@@ -56,18 +56,25 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     const da = this.router.url.split('/');
-    if ( da.length === 4 && da[1] === 'restaurant' && da[3].length > 0 && da[2].length > 0){
-      this.constantService.resetLogo();
+    if (this.router.url === '/cocan'){
+
+    }else{
+      if ( da.length === 4 && da[1] === 'restaurant' && da[3].length > 0 && da[2].length > 0){
+        this.constantService.resetLogo();
+      }
     }
+
     this.activatedRoute.url
       .subscribe(url => {
-        const d = url.toString().split(',');
-        if ( d.length !== 3){
-          this.constantService.resetLogo();
-        }
-        else{
-          if ( da[0] !== 'restaurant' || da[2].length !== 1){
+        if (url.toString() !== 'cocan'){
+          const d = url.toString().split(',');
+          if ( d.length !== 3){
             this.constantService.resetLogo();
+          }
+          else{
+            if ( da[0] !== 'restaurant' || da[2].length !== 1){
+              this.constantService.resetLogo();
+            }
           }
         }
 

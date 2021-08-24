@@ -74,4 +74,6 @@ export class Config {
   public static updatePharmacyNight = 'api/update/pharmacy_night';
   public static deletePharmacyNight = 'api/delete/pharmacy_night';
   public static showAdvert = 'show/advert';
+  public static getQrCodeCocan = 'get/qr/code/cocan';
+  public static updateLocation = 'api/update/location';
 }

@@ -7,5 +7,7 @@ export interface Location {
   street: string;
   street_detail: string;
   map_link: string;
+  longitude: string;
+  latitude: string;
   is_active: boolean;
 }

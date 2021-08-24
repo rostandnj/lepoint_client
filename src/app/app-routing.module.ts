@@ -22,6 +22,7 @@ import {PlaceProductComponent} from './place-product/place-product.component';
 import {PlaceComponent} from './place/place.component';
 import {ShowAdvertComponent} from './show-advert/show-advert.component';
 import {NightPharmacyComponent} from './night-pharmacy/night-pharmacy.component';
+import {CocanComponent} from './cocan/cocan.component';
 
 
 const routes: Routes = [
@@ -49,7 +50,8 @@ const routes: Routes = [
   { path: 'manage/restaurant/manager', component: ManagerManagerComponent},
   { path: 'user/profil/@/:name/:id', component: UserProfileComponent},
   { path: 'my/orders', component: UserOrdersComponent},
-  { path: 'my/notifications', component: UserNotificationsComponent}
+  { path: 'my/notifications', component: UserNotificationsComponent},
+  { path: 'cocan', component: CocanComponent}
 ];
 
 @NgModule({

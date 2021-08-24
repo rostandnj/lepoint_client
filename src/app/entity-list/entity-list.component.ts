@@ -1,6 +1,6 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {Entity} from '../schema/Entity';
-import {Subscription} from 'rxjs';
+import {Observable, Subscription} from 'rxjs';
 import {EntityService} from '../service/entity-service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {AuthService} from '../service/auth-service';
@@ -9,6 +9,10 @@ import {Config} from '../config';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {City} from '../schema/City';
 import {HttpClient} from '@angular/common/http';
+import {BsModalRef, BsModalService} from 'ngx-bootstrap/modal';
+import {Coord} from '../schema/Coord';
+import {GoogleMap, MapDirectionsService, MapInfoWindow} from '@angular/google-maps';
+import {map} from 'rxjs/operators';
 
 @Component({
   selector: 'app-entity-list',
@@ -16,7 +20,6 @@ import {HttpClient} from '@angular/common/http';
   styleUrls: ['./entity-list.component.css']
 })
 export class EntityListComponent implements OnInit, OnDestroy {
-
   entities: Entity[];
   entitiesToShow: Entity[];
   entitiesSubscription: Subscription;
@@ -36,17 +39,45 @@ export class EntityListComponent implements OnInit, OnDestroy {
   isSearchMore = false;
   loadingSearchMore = false;
   isStart = true;
+  modalMap: BsModalRef;
+  zoom = 12;
+  center: google.maps.LatLngLiteral;
+  options: google.maps.MapOptions = {
+    mapTypeId: 'roadmap',
+    zoomControl: true,
+    scrollwheel: true,
+    disableDoubleClickZoom: true,
+    maxZoom: 18,
+    minZoom: 3,
+    center: this.center
+  };
+  currentPosition: Coord;
+  currentPositionSubscription: Subscription;
+  markers = [];
+  mapType = 'roadmap';
+  iconMap = null;
+  centerMap = null;
+  directionsResults$: Observable<google.maps.DirectionsResult|undefined>;
 
   constructor( private entityService: EntityService, private router: Router, private actRoute: ActivatedRoute,
                private authService: AuthService, private constantService: ConstantsService, private fb: FormBuilder,
-               private httpClient: HttpClient) {
+               private httpClient: HttpClient, private modalService: BsModalService,
+               private mapDirectionsService: MapDirectionsService) {
+    this.iconMap = {
+      url: 'assets/img/resto.png',
+      labelOrigin: new google.maps.Point(15, 40)
+    };
+    this.center = null;
     this.entities = [];
+    this.currentPosition = {latitude: '', longitude: ''};
+    this.center = null;
     this.entitiesToShow = [];
     this.entitiesSubscription = this.entityService.entitiesSubject.subscribe((res) => {
       this.isSearch = false;
       if (this.isStart === true){
         this.entitiesToShow = [];
         this.entities = [];
+        this.markers = [];
       }
       res.forEach((el) => {
         if (parseInt(el.type, 10) === 1){
@@ -75,6 +106,28 @@ export class EntityListComponent implements OnInit, OnDestroy {
         }
         this.entities.push(el);
         this.entitiesToShow.push(el);
+        if (el.location.latitude !== null){
+          this.markers.push(
+            {
+              position: {
+                lat: Number(el.location.latitude) ,
+                lng: Number(el.location.longitude),
+              },
+              label: {
+                color: 'red',
+                text: el.global_info.name,
+                fontWeight: 'bold',
+                fontSize: '12px'
+              },
+              title: el.global_info.name,
+              clickable: true,
+              id: el.id,
+              ling: el.link,
+              slug: el.global_info.slug,
+              options: { },
+            }
+          );
+        }
       });
       this.loading = false;
 
@@ -108,6 +161,7 @@ export class EntityListComponent implements OnInit, OnDestroy {
       if (this.isSearchMore === false){
         this.entitiesToShow = [];
         this.entities = [];
+        this.markers = [];
       }
       res.forEach((el) => {
         if (parseInt(el.type, 10) === 1){
@@ -135,6 +189,28 @@ export class EntityListComponent implements OnInit, OnDestroy {
           el.global_info.image = Config.apiUrl + 'uploads/profile/' + el.global_info.image;
         }
         this.entitiesToShow.push(el);
+        if (el.location.latitude !== null){
+          this.markers.push(
+            {
+              position: {
+                lat: Number(el.location.latitude) ,
+                lng: Number(el.location.longitude),
+              },
+              label: {
+                color: 'red',
+                text: el.global_info.name,
+                fontWeight: 'bold',
+                fontSize: '12px'
+              },
+              title: el.global_info.name,
+              clickable: true,
+              id: el.id,
+              ling: el.link,
+              slug: el.global_info.slug,
+              options: { },
+            }
+          );
+        }
       });
       this.loading = false;
       this.loadingSearchMore = false;
@@ -152,11 +228,41 @@ export class EntityListComponent implements OnInit, OnDestroy {
     }, (error) => {
       console.log(error);
     }, () => {});
+
+    this.currentPositionSubscription = this.constantService.currentPositionSubject.subscribe((res) => {
+      this.currentPosition = res;
+      this.center = {lat: Number(this.currentPosition.latitude), lng: Number(this.currentPosition.longitude)};
+      this.centerMap = {
+        position: {
+          lat: this.center.lat ,
+          lng: this.center.lng,
+        },
+        label: {
+          color: 'red',
+          text: 'Me ',
+          fontWeight: 'bold',
+          fontSize: '12px'
+        },
+        title: 'Me',
+        clickable: false,
+        id: 'nj',
+        options: { },
+      };
+      this.markers.push(
+        this.centerMap
+      );
+
+    }, (error) => {
+      console.log(error);
+    }, () => {
+
+    });
   }
 
   get f1() { return this.formSearch.controls; }
 
   ngOnInit(): void {
+    this.center = {lat: Number('3.860934195914553'), lng: Number('11.520466610495909')};
     if (this.router.url === '/restaurants'){
       this.entityType = '1';
     }
@@ -190,6 +296,51 @@ export class EntityListComponent implements OnInit, OnDestroy {
       this.cities = data;
     });
 
+    if (this.constantService.currentPositionIsOk){
+      this.centerMap = {
+        position: {
+          lat: Number(this.constantService.currentPosition.latitude) ,
+          lng: Number(this.constantService.currentPosition.longitude),
+        },
+        label: {
+          color: 'red',
+          text: 'Me ',
+          fontWeight: 'bold',
+          fontSize: '12px'
+        },
+        title: 'Me',
+        clickable: false,
+        id: 'nj',
+        options: { },
+      };
+      this.options.center = new google.maps.LatLng(Number(this.constantService.currentPosition.latitude),
+        Number(this.constantService.currentPosition.longitude));
+      this.markers.push(
+        this.centerMap
+      );
+    }
+    else{
+      this.centerMap = {
+        position: {
+          lat: Number('3.860934195914553') ,
+          lng: Number('11.520466610495909'),
+        },
+        label: {
+          color: 'red',
+          text: 'POSTE ',
+          fontWeight: 'bold',
+          fontSize: '12px'
+        },
+        title: 'Poste',
+        clickable: false,
+        id: 'nj',
+        options: { },
+      };
+      this.markers.push(
+        this.centerMap
+      );
+    }
+
   }
 
   ngOnDestroy(): void{
@@ -222,5 +373,40 @@ export class EntityListComponent implements OnInit, OnDestroy {
     this.isStart = true;
     this.isSearchMore = false;
     this.entityService.getEntities(this.entityType);
+  }
+
+  zoomIn() {
+    if (this.zoom < this.options.maxZoom) { this.zoom++; }
+    console.log(this.zoom);
+  }
+
+  zoomOut() {
+    if (this.zoom > this.options.minZoom) { this.zoom--; }
+    console.log(this.zoom);
+  }
+
+  public openMap(template: TemplateRef<any>) {
+    if (this.centerMap !== null){
+      this.markers.push(
+        this.centerMap
+      );
+    }
+    this.modalMap = this.modalService.show(template, Object.assign({}, { class: 'login' }));
+  }
+
+  clickMap($event: google.maps.MapMouseEvent | google.maps.IconMouseEvent) {
+  }
+
+  openInfoWindow(marker) {
+    if (marker.id !== 'nj'){
+      this.modalMap.hide();
+      this.router.navigate([marker.ling + marker.id.toString() + '/' + marker.slug]);
+      /*const request: google.maps.DirectionsRequest = {
+        destination: {lat: marker.position.lat, lng: marker.position.lng},
+        origin: {lat: this.center.lat, lng: this.center.lng},
+        travelMode: google.maps.TravelMode.DRIVING
+      };
+      this.directionsResults$ = this.mapDirectionsService.route(request).pipe(map(response => response.result));*/
+    }
   }
 }

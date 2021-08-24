@@ -5,6 +5,7 @@ import { Config } from '../config';
 import {Subject, Subscription} from 'rxjs';
 import {Router} from '@angular/router';
 import {User} from '../schema/User';
+import {Coord} from '../schema/Coord';
 
 @Injectable({
   providedIn: 'root',
@@ -27,9 +28,16 @@ export class ConstantsService implements OnDestroy{
   globalAlertStatus = '';
   currentLogo = 'assets/img/lepoint.png';
   currentLogoSubject = new Subject<string>();
+  currentPosition: Coord;
+  currentPositionSubject = new Subject<Coord>();
+  currentPositionIsOk = false;
 
   emitCurrentLang() {
     this.currentLangSubject.next(this.currentLang);
+  }
+
+  emitCurrentPosition() {
+    this.currentPositionSubject.next(this.currentPosition);
   }
 
   emitUser() {
@@ -50,6 +58,7 @@ export class ConstantsService implements OnDestroy{
 
 
   constructor(private translateService: TranslateService, private cookieService: CookieService, private router: Router) {
+    this.currentPosition = {latitude: '', longitude: ''};
     this.initData();
   }
 
@@ -82,6 +91,7 @@ export class ConstantsService implements OnDestroy{
       this.cookieLang = 'fr';
     }
     this.changeLang(this.cookieLang);
+    this.getPosition();
     this.emitCurrentLang();
     this.emitCurrentLogo();
 
@@ -123,8 +133,31 @@ export class ConstantsService implements OnDestroy{
     this.emitUser();
   }
 
+  public updatePosition(position){
+    this.currentPosition.latitude = position.lat;
+    this.currentPosition.longitude = position.lng;
+
+    this.emitCurrentPosition();
+  }
+  public getPosition(){
+    navigator.geolocation.getCurrentPosition((pos) => {
+      if (pos !== null){
+        this.currentPositionIsOk = true;
+        this.currentPosition.latitude = pos.coords.latitude.toString();
+        this.currentPosition.longitude = pos.coords.longitude.toString();
+        this.emitCurrentPosition();
+        // setTimeout(() => {window.location.reload(); }, 1000);
+      }
+    });
+  }
+
   public updateLogo(logo: string){
     this.currentLogo =  Config.apiUrl + '/uploads/profile/' + logo;
+    this.emitCurrentLogo();
+  }
+
+  public updateLogoAsset(logo: string){
+    this.currentLogo =  'assets/img/' + logo;
     this.emitCurrentLogo();
   }
 

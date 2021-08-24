@@ -230,11 +230,12 @@
                              <a class="dropdown-item btn btn-link" routerLink="/manage/entity/{{ent.global_info.slug}}-{{ent.id}}" ><span class="feather-settings"></span> {{'manage'|translate}}</a>
                              <button *ngIf="ent.status === true && userType == 0" class="dropdown-item btn btn-link" (click)="changeEntityStatus(ent, 0)" ><span class="feather-lock"></span> {{'lock'|translate}}</button>
                              <button *ngIf="ent.status === false && userType == 0" class="dropdown-item btn btn-link" (click)="changeEntityStatus(ent, 1)" ><span class="feather-unlock"></span> {{'unlock'|translate}}</button>
-                           <button class="dropdown-item btn btn-link" (click)="openModalActivation(templateActivation, ent)" >{{'activation'|translate}}</button>
-                           <button *ngIf="[1,2,3].includes(number(ent.type))" class="dropdown-item btn btn-link" (click)="changeCanOrder(ent.id)" >
-                             <span *ngIf="ent.can_order === true" class="feather-x-circle"></span>
-                             <span *ngIf="ent.can_order === false" class="feather-check-circle"></span> {{'use order system'|translate}}
-                           </button>
+                             <button class="dropdown-item btn btn-link" (click)="openModalActivation(templateActivation, ent)" >{{'activation'|translate}}</button>
+                             <button *ngIf="[1,2,3].includes(number(ent.type))" class="dropdown-item btn btn-link" (click)="changeCanOrder(ent.id)" >
+                               <span *ngIf="ent.can_order === true" class="feather-x-circle"></span>
+                               <span *ngIf="ent.can_order === false" class="feather-check-circle"></span> {{'use order system'|translate}}
+                             </button>
+                            <button  class="dropdown-item btn btn-link" (click)="addLocation(ent)" ><span class="feather-map-pin"></span> {{'add location'|translate}}</button>
 
                           </div>
 

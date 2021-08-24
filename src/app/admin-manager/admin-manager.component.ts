@@ -1129,4 +1129,39 @@ export class AdminManagerComponent implements OnInit, OnDestroy {
 
 
   }
+
+  addLocation(ent: Entity) {
+    this.loading = true;
+    this.entityService.updateLocation({id: ent.id, longitude: this.constantService.currentPosition.longitude,
+    latitude: this.constantService.currentPosition.latitude}).subscribe((res: Entity) => {
+      this.loading = false;
+      const length = this.entities.length;
+      let index = null;
+      for (let i = 0; i < length; i++){
+        if (this.entities[i].id === res.id ){
+          index = i;
+        }
+      }
+      if (index !== null){
+        this.entities.splice(index, 1, res);
+      }
+      this.translateService.get('item updated', {}).subscribe((value: string) => {
+        this.constantService.updateGlobalStatus(value);
+      });
+
+
+    }, (error) => {
+      this.loading = false;
+      if (error.error.message === undefined){
+        this.constantService.updateGlobalStatus(error.error);
+      }
+      else{
+        this.constantService.updateGlobalStatus(error.error.message);
+      }
+      console.log(error.error);
+
+    }, () => {
+
+    });
+  }
 }

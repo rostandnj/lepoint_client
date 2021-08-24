@@ -48,6 +48,8 @@ import { PlaceProductComponent } from './place-product/place-product.component';
 import { PlaceComponent } from './place/place.component';
 import { ShowAdvertComponent } from './show-advert/show-advert.component';
 import { NightPharmacyComponent } from './night-pharmacy/night-pharmacy.component';
+import { CocanComponent } from './cocan/cocan.component';
+import { GoogleMapsModule } from '@angular/google-maps';
 
 
 
@@ -85,7 +87,8 @@ export function TranslationLoaderFactory(http: HttpClient) {
     PlaceProductComponent,
     PlaceComponent,
     ShowAdvertComponent,
-    NightPharmacyComponent
+    NightPharmacyComponent,
+    CocanComponent
   ],
   imports: [
     BrowserModule,
@@ -95,6 +98,7 @@ export function TranslationLoaderFactory(http: HttpClient) {
     ModalModule.forRoot(),
     AlertModule.forRoot(),
     SlickCarouselModule,
+    GoogleMapsModule,
     TranslateModule.forRoot({
       defaultLanguage: 'fr',
       loader: {provide: TranslateLoader, useFactory: TranslationLoaderFactory, deps: [HttpClient]}
