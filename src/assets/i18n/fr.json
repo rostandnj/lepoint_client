@@ -201,5 +201,6 @@
   "groups": "Poules",
   "stadium": "Stades",
   "add location": "localisation",
-  "show in map": "afficher sur la carte"
+  "show in map": "afficher sur la carte",
+  "looking for entity": "Lieux, informations, ..."
 }

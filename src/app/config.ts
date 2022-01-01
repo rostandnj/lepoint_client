@@ -1,8 +1,8 @@
 export class Config {
   public static langs = ['en', 'fr'];
   public static appTitle = 'entity-Cameroon';
-  public static apiUrl = 'http://localhost/lepointApi/public/';
-  public static apiSecure = 'http://localhost/lepointApi/public/api';
+  public static apiUrl = 'https://api.lepoint.cm/';
+  public static apiSecure = 'https://api.lepoint.cm/api';
   public static entityList = 'list/active/entity';
   public static login = 'api/login';
   public static signup = 'register/client';

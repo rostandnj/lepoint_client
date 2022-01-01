@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {AuthService} from '../service/auth-service';
 import {ConstantsService} from '../service/constants-service';
+import {City} from '../schema/City';
+import {HttpClient} from '@angular/common/http';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 
 @Component({
   selector: 'app-base-home',
@@ -12,11 +15,18 @@ export class BaseHomeComponent implements OnInit {
   loading = false;
   token: string;
   position = {};
+  cities: City[];
+  formSearch: FormGroup;
 
-  constructor(private actRoute: ActivatedRoute, private authService: AuthService,
-              private constantService: ConstantsService) {
+  constructor(private actRoute: ActivatedRoute, private authService: AuthService, private httpClient: HttpClient,
+              private constantService: ConstantsService, private fb: FormBuilder, private router: Router) {
+    this.formSearch = this.fb.group({
+      city: ['', Validators.required],
+      entity: ['', Validators.required],
+    });
 
   }
+  get f1() { return this.formSearch.controls; }
 
   ngOnInit(): void {
     this.token = this.actRoute.snapshot.params.token;
@@ -32,6 +42,13 @@ export class BaseHomeComponent implements OnInit {
       });
 
     }
+    this.httpClient.get('assets/city.json').subscribe((data: City[]) => {
+      this.cities = data;
+    });
+  }
+
+  goToEntityPageByTown() {
+    this.router.navigate([this.formSearch.value.entity], { queryParams: { c: this.formSearch.value.city } });
   }
 
 }

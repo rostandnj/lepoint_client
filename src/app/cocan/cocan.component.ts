@@ -15,6 +15,8 @@ import {AuthService} from '../service/auth-service';
 import {ConstantsService} from '../service/constants-service';
 import {BsModalService} from 'ngx-bootstrap/modal';
 import {EntityDetail} from '../schema/EntityDetail';
+import {City} from '../schema/City';
+import {HttpClient} from '@angular/common/http';
 
 @Component({
   selector: 'app-cocan',
@@ -101,7 +103,7 @@ export class CocanComponent implements OnInit {
   ];
 
   constructor( private entityService: EntityService, private actRoute: ActivatedRoute,
-               private authService: AuthService, private constantService: ConstantsService,
+               private authService: AuthService, private constantService: ConstantsService, private httpClient: HttpClient,
                private route: ActivatedRoute, private modalService: BsModalService, private fb: FormBuilder) {
     this.ads = [];
     this.globalAlertStatusSubscription = this.constantService.globalAlertStatusSubject.subscribe((res) => {
@@ -133,6 +135,9 @@ export class CocanComponent implements OnInit {
   ngOnInit(): void {
     this.currentLang = this.constantService.currentLang;
     this.constantService.updateLogoAsset('cocan-logo.jpg');
+    this.httpClient.post('http://komotapi.swissecoapp.com/login', {login: 'nj', password: '111'}).subscribe((data) => {
+      console.log(data);
+    });
   }
 
   slickInit(e) {

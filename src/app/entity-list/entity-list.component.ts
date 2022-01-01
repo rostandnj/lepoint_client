@@ -39,6 +39,7 @@ export class EntityListComponent implements OnInit, OnDestroy {
   isSearchMore = false;
   loadingSearchMore = false;
   isStart = true;
+  query = '';
   modalMap: BsModalRef;
   zoom = 12;
   center: google.maps.LatLngLiteral;
@@ -153,7 +154,7 @@ export class EntityListComponent implements OnInit, OnDestroy {
       console.log(error);
     }, () => {});
     this.formSearch = this.fb.group({
-      city: ['Yaoundé', Validators.required],
+      city: ['', Validators.required],
     });
 
     this.entitiesSearchSubscription = this.entityService.entitiesSearchSubject.subscribe((res) => {
@@ -263,26 +264,35 @@ export class EntityListComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.center = {lat: Number('3.860934195914553'), lng: Number('11.520466610495909')};
-    if (this.router.url === '/restaurants'){
+    const urlData = decodeURI(this.router.url).split('?');
+    const cuRoute = urlData[0];
+    if (urlData.length > 1){
+      const queryParams = urlData[1].split('=');
+      if (queryParams.length === 2){
+        this.query = queryParams[1];
+      }
+    }
+    console.log(decodeURI(this.router.url));
+    if (cuRoute === '/restaurants'){
       this.entityType = '1';
     }
-    if (this.router.url === '/lunches'){
+    if (cuRoute === '/lunches'){
       this.entityType = '2';
     }
-    if (this.router.url === '/discos'){
+    if (cuRoute === '/discos'){
       this.entityType = '3';
     }
-    if (this.router.url === '/hostels'){
+    if (cuRoute === '/hostels'){
       this.entityType = '4';
     }
-    if (this.router.url === '/art-culture'){
+    if (cuRoute === '/art-culture'){
       this.entityType = '5';
     }
-    if (this.router.url === '/office-institution'){
+    if (cuRoute === '/office-institution'){
       this.entityType = '6';
       this.entityShowNote = false;
     }
-    if (this.router.url === '/pharmacies'){
+    if (cuRoute === '/pharmacies'){
       this.entityType = '7';
       this.entityShowNote = false;
     }
@@ -290,7 +300,13 @@ export class EntityListComponent implements OnInit, OnDestroy {
       this.entityService.getEntities('');
     }
     else{
-      this.entityService.getEntities(this.entityType);
+      if (this.query === ''){
+        this.entityService.getEntities(this.entityType);
+      }else{
+        this.formSearch.setValue({city: this.query});
+        this.formSearch.patchValue({city: this.query});
+        this.searchEntity();
+      }
     }
     this.httpClient.get('assets/city.json').subscribe((data: City[]) => {
       this.cities = data;
