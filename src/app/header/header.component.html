@@ -7,9 +7,13 @@
         <i class="feather-settings text-white"></i>
         admin
       </a>
-      <a routerLink="/manage/dashboard" *ngIf="isLogin && userType == 1"  class="text-white small font-weight-bold text-decoration-none ml-auto">
+      <a routerLink="/manage/dashboard" *ngIf="isLogin && userType == 1"  class="ml-2 text-white small font-weight-bold text-decoration-none ml-auto">
         <i class="feather-settings text-white"></i>
         {{'manage services'|translate}}
+      </a>
+      <a routerLink="/manage/news" *ngIf="isLogin && ['0','1'].includes(userType)"  class="ml-4 text-white small font-weight-bold text-decoration-none ">
+        <i class="feather-settings text-white"></i>
+        Blog
       </a>
       <a routerLink="/manage/dashboard" *ngIf="isLogin && userType == 10"  class="text-white small font-weight-bold text-decoration-none ml-auto">
         <i class="feather-settings text-white"></i>

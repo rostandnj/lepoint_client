@@ -23,6 +23,9 @@ import {PlaceComponent} from './place/place.component';
 import {ShowAdvertComponent} from './show-advert/show-advert.component';
 import {NightPharmacyComponent} from './night-pharmacy/night-pharmacy.component';
 import {CocanComponent} from './cocan/cocan.component';
+import {NewsComponent} from './news/news.component';
+import {AdminBlogComponent} from './admin-blog/admin-blog.component';
+import {ShowArticleComponent} from './show-article/show-article.component';
 
 
 const routes: Routes = [
@@ -51,7 +54,10 @@ const routes: Routes = [
   { path: 'user/profil/@/:name/:id', component: UserProfileComponent},
   { path: 'my/orders', component: UserOrdersComponent},
   { path: 'my/notifications', component: UserNotificationsComponent},
-  { path: 'cocan', component: CocanComponent}
+  { path: 'cocan', component: CocanComponent},
+  { path: 'news', component: NewsComponent},
+  { path: 'manage/news', component: AdminBlogComponent},
+  { path: 'article/:slug', component: ShowArticleComponent},
 ];
 
 @NgModule({

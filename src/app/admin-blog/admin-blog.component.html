@@ -1,0 +1,288 @@
+<div class="fixed-bottom-bar">
+  <div class="osahan-home-page">
+    <div class=" p-2" style="background: linear-gradient(45deg, #248964, #cf5f57, #f3dd9f);">
+      <app-header></app-header>
+
+    </div>
+
+    <div class="bg-light home-list main-content" >
+
+      <alert *ngIf="globalAlertStatus != ''" type="info" [dismissOnTimeout]="10000">
+        <strong>{{globalAlertStatus}}</strong>
+      </alert>
+      <div class="row container-fluid mt-4" >
+        <div class="col-md-12" style="text-align: center">
+
+        </div>
+      </div>
+
+      <nav class="navbar navbar-expand-lg navbar-light  mb-1 ">
+        <h6>{{'manage_news'|translate}} <img *ngIf="loading"  class=" font-weight-bold ml-auto loader-min" src="assets/img/spinner.gif" /></h6>
+        <button class="btn btn-primary ml-auto" id="menu-toggle" (click)="openModalAddArticle(templateAddAdvert)" >{{'create_article'|translate}}</button>
+      </nav>
+        <div class="card bg-white m-2">
+
+
+
+          <!-- manage entity start -->
+          <div class="card-body p-1">
+
+           <div class="row">
+             <div *ngFor="let art of articles" class="col-lg-4 col-md-4 col-sm-12 mt-4 mb-4">
+               <div class="list-card bg-white h-100 rounded overflow-hidden position-relative shadow-sm">
+                 <div class="list-card-image" style="height: 270px">
+                   <div class="star position-absolute">
+                   </div>
+
+                   <div class="member-plan position-absolute">
+                      <span class="badge badge-dark" *ngIf="art.type == 10">
+                     COCAN
+                    </span>
+                     <span class="badge badge-dark" *ngIf="art.type == 0">
+                    {{'general_type'|translate}}
+                    </span>
+
+                   </div>
+                   <a routerLink="/article/{{art.slug}}">
+                     <img src="{{art.image_cover}}" class="img-fluid item-img w-100">
+                   </a>
+                 </div>
+                 <div class="p-3 position-relative">
+                   <div class="list-card-body">
+                     <h6 class="mb-1"><a href="#" class="text-black" tabindex="-1">{{art.title.slice(0,100)}}
+                     </a>
+                     </h6>
+                     <p class="text-gray mb-3">
+                       <button class="btn btn-secondary float-left" (click)="openModalArticle(art, templateEditArticle)"> {{'edit'|translate}}</button>
+                       <button class="btn btn-primary float-right" (click)="openModal(art,template)"> <i class="feather-trash"></i></button>
+
+                     </p>
+
+                     <ul class="rating-stars float-right list-unstyled">
+                       <li>
+                         <i class="feather-star text-warning" *ngFor="let good of goodStart(art.rate)"></i>
+                         <i class="feather-star" *ngFor="let good of badStart(art.rate)"></i>
+                       </li>
+                     </ul>
+
+
+                   </div>
+                   <a routerLink="/article/{{art.slug}}" class="list-card-badge">
+                <span class="total-like btn btn-sm btn-outline-primary" ><i class="feather-message-square"></i>
+                  {{art.nb_comment}}</span>
+                     <span class="total-like btn btn-sm btn-outline-primary ml-2" ><i class="feather-eye"></i>
+                       {{art.nb_view}}</span>
+                   </a>
+                 </div>
+               </div>
+             </div>
+           </div>
+
+
+            <button (click)="getMoreArticles()" *ngIf="canLoadMoreArticle" class="btn btn-primary btn-block w-50">
+              {{'load more'|translate}}<img *ngIf="loadingMore"  class=" font-weight-bold ml-auto loader-min" src="assets/img/spinner.gif" />
+            </button>
+
+          </div>
+          <!-- manage entity end -->
+
+        </div>
+
+
+
+
+
+      <!-- template add article -->
+      <ng-template #templateAddAdvert>
+        <div class="modal-header login">
+          <img src="assets/img/lepoint.png" class="" style="width: 100px;height: 50px" />
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modalAddArticle.hide()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body bg-white ">
+          <alert *ngIf="alertStatus" type="info" [dismissOnTimeout]="5000">
+            <strong>{{alertMsg}}!</strong>
+          </alert>
+
+          <div class="card fat">
+            <div class="card-body">
+              <h4 class="card-title">{{'create_article'|translate}}</h4>
+              <form  [formGroup]="formArticle" (ngSubmit)="addArticle()">
+                <div class="form-group">
+                  <label for="title">{{'title'|translate}} *</label>
+                  <input id="title" type="text" class="form-control" formControlName="title" name="title" required autofocus>
+                  <div  *ngIf="f4.title.invalid && f4.title.touched && f4.title.errors?.minlength" class="text-danger">
+                    {{'name error'|translate}}
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="type">{{'type'|translate}} *</label>
+                  <select id="type" class="form-control" formControlName="type" name="type" required>
+                    <option value="0" selected>{{'general_type'|translate}}</option>
+                    <option value="10">COCAN</option>
+                  </select>
+                  <div class="text-danger">
+
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>{{'content'|translate}} <span style="font-size: 10px;font-weight: bold">({{'min_character_allowed'|translate}} : 500)</span> </label>
+
+                  <ckeditor [config]="config" (change)="onChange($event)" formControlName="content" [editor]="Editor" data=""></ckeditor>
+
+                  <div  class="text-success">
+                    {{'current_character'|translate}}: {{currentCharacter}}
+                  </div>
+                </div>
+
+
+                <div class="form-group">
+                  <label for="adv_file">{{'image'|translate}} <a href="javascript:void(0)" (click)="clearArticleFile()" class="btn btn-sm btn-outline-primary">{{'image'|translate}}<span style="font-size: 12px;margin-left: 30px" class="feather-trash"></span></a>
+
+                  </label>
+                  <input id="adv_file" class="form-control" type="file" accept="image/*" (change)="showPreviewArticleFile($event)" />
+
+                  <!-- Image Preview -->
+                  <div  class="imagePreview" *ngIf="formArticleFile !== null && showExtensions2.includes(formArticleFile.type) && imageArticleURL && imageArticleURL !== '' && !articleFileIsclear">
+                    <img style="width: 200px;height: 170px" class="img-thumbnail img-fluid img-profile-preview" [src]="imageArticleURL" height="170px" width="200px">
+                  </div>
+                  <div  class="imagePreview" *ngIf="formArticleFile !== null && !showExtensions2.includes(formArticleFile.type) && imageArticleURL && imageArticleURL !== '' && !articleFileIsclear">
+                    <img style="width: 200px;height: 170px" class="img-thumbnail img-fluid img-profile-preview" src="assets/img/pdf.png" height="170px" width="200px">
+                  </div>
+                  <ng-container *ngIf="imageArticleError != ''">
+                    <p class="text-danger small">
+                      {{'max file size error'|translate}}
+                    </p>
+                  </ng-container>
+
+                </div>
+
+                <div *ngIf="formArticleError!=''" class="form-group text-danger">
+                  {{formArticleError}}
+                </div>
+
+                <div class="form-group m-0">
+                  <button [disabled]="formArticle.invalid || currentCharacter < 500 || loadingFormArticle" type="submit" class="btn btn-primary btn-block">
+                    {{'save'|translate}}<img alt="" *ngIf="loadingFormArticle"  class=" font-weight-bold ml-auto loader-min" src="assets/img/spinner.gif" />
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+        </div>
+      </ng-template>
+      <!-- template add article -->
+
+      <!-- template edit article -->
+      <ng-template #templateEditArticle>
+        <div class="modal-header login">
+          <img src="assets/img/lepoint.png" class="" style="width: 100px;height: 50px" />
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modalupdateArticle.hide()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body bg-white ">
+          <alert *ngIf="alertStatus" type="info" [dismissOnTimeout]="5000">
+            <strong>{{alertMsg}}!</strong>
+          </alert>
+
+          <div class="card fat">
+            <div class="card-body">
+              <h4 class="card-title">{{'edit_article'|translate}}</h4>
+              <form  [formGroup]="formArticleEdit" (ngSubmit)="updateArticle()">
+                <div class="form-group">
+                  <label for="title-edit">{{'title'|translate}} *</label>
+                  <input id="title-edit" type="text" class="form-control" formControlName="title" name="title" required autofocus>
+                  <div  *ngIf="f44.title.invalid && f44.title.touched && f44.title.errors?.minlength" class="text-danger">
+                    {{'name error'|translate}}
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="type-edit">{{'type'|translate}} *</label>
+                  <select id="type-edit" class="form-control" formControlName="type" name="type" required>
+                    <option value="0" >{{'general_type'|translate}}</option>
+                    <option value="10">COCAN</option>
+                  </select>
+                  <div class="text-danger">
+
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>{{'content'|translate}} <span style="font-size: 10px;font-weight: bold">({{'min_character_allowed'|translate}} : 500)</span> </label>
+
+                  <ckeditor [config]="config2" formControlName="content" [editor]="Editor2" data=""></ckeditor>
+
+                  <div  class="text-success">
+                    {{'current_character'|translate}}: {{currentCharacterEdit}}
+                  </div>
+                </div>
+
+
+                <div class="form-group">
+                  <label for="adv_file-edit">{{'image'|translate}} <a href="javascript:void(0)" (click)="clearArticleFileEdit()" class="btn btn-sm btn-outline-primary">{{'image'|translate}}<span style="font-size: 12px;margin-left: 30px" class="feather-trash"></span></a>
+
+                  </label>
+                  <input id="adv_file-edit" class="form-control" type="file" accept="image/*" (change)="showPreviewArticleFileEdit($event)" />
+
+                  <!-- Image Preview -->
+                  <div  class="imagePreview" *ngIf="formArticleFileEdit !== null && showExtensions2.includes(formArticleFileEdit.type) && imageArticleURLEdit && imageArticleURLEdit !== '' && !articleFileIsclearEdit">
+                    <img style="width: 200px;height: 170px" class="img-thumbnail img-fluid img-profile-preview" [src]="imageArticleURLEdit" height="170px" width="200px">
+                  </div>
+                  <div  class="imagePreview" *ngIf="formArticleFileEdit !== null && !showExtensions2.includes(formArticleFileEdit.type) && imageArticleURLEdit && imageArticleURLEdit !== '' && !articleFileIsclearEdit">
+                    <img style="width: 200px;height: 170px" class="img-thumbnail img-fluid img-profile-preview" src="assets/img/pdf.png" height="170px" width="200px">
+                  </div>
+                  <ng-container *ngIf="imageArticleErrorEdit != ''">
+                    <p class="text-danger small">
+                      {{'max file size error'|translate}}
+                    </p>
+                  </ng-container>
+
+                </div>
+
+                <div *ngIf="formArticleErrorEdit!=''" class="form-group text-danger">
+                  {{formArticleErrorEdit}}
+                </div>
+
+                <div class="form-group m-0">
+                  <button [disabled]="formArticleEdit.invalid || currentCharacterEdit < 500 || loadingFormArticleEdit" type="submit" class="btn btn-primary btn-block">
+                    {{'update'|translate}}<img alt="" *ngIf="loadingFormArticleEdit"  class=" font-weight-bold ml-auto loader-min" src="assets/img/spinner.gif" />
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+        </div>
+      </ng-template>
+      <!-- template edit article -->
+
+      <ng-template #template >
+        <div class="modal-header">
+          <h4 class="modal-title pull-left">Modal</h4>
+          <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-content" style="height: 300px!important;">
+          <div class="container">
+            <p>{{'delete_message'|translate}}</p>
+            <p>
+              <button (click)="modalRef.hide()" class="btn btn-secondary float-left">{{'no'|translate}}</button>
+              <button (click)="deleteArticle()" class="btn btn-primary float-right">{{'yes'|translate}}</button>
+
+            </p>
+          </div>
+
+        </div>
+      </ng-template>
+
+
+    </div>
+
+    <app-footer></app-footer>
+
+  </div>
+</div>
+

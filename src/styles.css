@@ -684,7 +684,7 @@ p {
 
 .rating-stars .feather-star {
   font-size: 10px;
-  background: #000000;
+  background: #b5b5b5;
   color: #fff;
   padding: 2px;
   text-shadow: 0 0 1px #d2b128;
@@ -1354,4 +1354,21 @@ background-color: white!important;
 .main-title{
   font-size: 14px!important;
   font-width: 600!important;
+}
+
+.ck-editor__editable {
+  min-height: 600px;
+}
+.ck-editor__editable_inline {
+  min-height: 600px;
+}
+
+.modal-small{
+  max-width: 400px!important;
+  max-height: 400px!important;
+  height: auto!important;
+}
+
+figure img{
+  max-width: 100%!important;
 }

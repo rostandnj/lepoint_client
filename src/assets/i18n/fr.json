@@ -202,5 +202,21 @@
   "stadium": "Stades",
   "add location": "localisation",
   "show in map": "afficher sur la carte",
-  "looking for entity": "Lieux, informations, ..."
+  "looking for entity": "Lieux, informations, ...",
+  "news_page": "News",
+  "news_intro": "Restez à l'écoute",
+  "manage_news": "Gestion des articles",
+  "create_article": "Créer un article",
+  "edit_article": "Modifier un article",
+  "general_type": "Géneral",
+  "min_character_allowed": "Nombre minimun de charactères ",
+  "current_character": "Charactères  ",
+  "delete_message": "Voulez vous vraiment supprimer cet élément ?",
+  "rating_and_reviews": "Commentaires",
+  "rate_article": "Noter l'article",
+  "leave_comment": "Laisser un commentaire",
+  "your_comment": "votre commentaire",
+  "comment_alert": "Bien vouloir se connecter pour commenter",
+  "reaction added": "Reaction ajoutée",
+  "comment added": "Commentaire ajouté"
 }

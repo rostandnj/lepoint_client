@@ -480,4 +480,44 @@ export class EntityService {
   updateLocation(data){
     return this.apiService.post(Config.updateLocation, data);
   }
+
+  addArticle(data){
+    return this.apiService.post(Config.addArticle, data);
+  }
+
+  userArticles(data){
+    return this.apiService.post(Config.userArticles, data);
+  }
+
+  recentArticles(data){
+    return this.apiService.post(Config.recentArticles, data);
+  }
+
+  updateArticle(data){
+    return this.apiService.post(Config.updateArticle, data);
+  }
+
+  deleteArticle(data){
+    return this.apiService.post(Config.deleteArticle, data);
+  }
+
+  showArticle(data){
+    return this.apiService.post(Config.showArticle, data);
+  }
+
+  commentArticle(data){
+    return this.apiService.post(Config.commentArticle, data);
+  }
+
+  reactOnArticle(data){
+    return this.apiService.post(Config.reactOnArticle, data);
+  }
+
+  reactOnComment(data){
+    return this.apiService.post(Config.reactOnComment, data);
+  }
+
+  listComments(data){
+    return this.apiService.post(Config.listComments, data);
+  }
 }

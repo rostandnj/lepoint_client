@@ -1,0 +1,136 @@
+<div class="fixed-bottom-bar">
+  <div class="osahan-home-page">
+    <div class="bg-primary p-2">
+      <app-header></app-header>
+
+    </div>
+
+
+    <div class="bg-light home-list main-content">
+
+      <alert *ngIf="globalAlertStatus != ''" type="info" [dismissOnTimeout]="10000">
+        <strong>{{globalAlertStatus}}</strong>
+      </alert>
+
+      <div class="card p-3" style="border-top-style: none!important;border-radius: 0!important;border-right-style: none!important;border-left-style: none!important;" *ngIf="openArticle!== null">
+        <div class="px-3 pb-3 title d-flex align-items-center  row">
+          <img alt="" *ngIf="loading" class="pt-3 font-weight-bold  loader"  src="assets/img/spinner.gif" />
+          <a class="text-danger font-weight-bold ml-auto" routerLink="/news"><i class="feather-chevron-left"></i> {{'back'|translate}}</a>
+
+        </div>
+
+        <div class="card fat" style="background: #fcfcfc!important;">
+          <div class="card-body">
+            <div id="ratings-and-reviews" class="bg-white d-flex align-items-center rounded shadow-sm p-3 mb-3 clearfix restaurant-detailed-star-rating">
+              <h6 class="mb-0">{{openArticle.title}}</h6>
+              <div class="star-rating ml-auto">
+                <div class="d-inline-block h6 m-0"><span class="badge badge-dark" *ngIf="openArticle.type == 10">
+                     COCAN
+                    </span>
+                  <span class="badge badge-dark" *ngIf="openArticle.type == 0">
+                    {{'general_type'|translate}}
+                    </span>
+                </div>
+              </div>
+            </div>
+
+            <img src="{{openArticle.image_cover}}" class="img-fluid card-img-block mb-3"/>
+            <div class="row ">
+              <div class="container-fluid" [innerHTML]="openArticle.content"></div>
+            </div>
+
+
+            <div class="bg-white rounded shadow-sm p-3 mb-3 restaurant-detailed-ratings-and-reviews">
+              <h6 class="mb-1">{{'rating_and_reviews'|translate}} ({{openArticle.nb_comment}})</h6>
+              <div class="star-rating ml-auto mb-3">
+                <div class="d-inline-block ">
+                  <i class="feather-star text-warning" *ngFor="let good of goodStart(openArticle.rate)"></i>
+                  <i class="feather-star" *ngFor="let good of badStart(openArticle.rate)"></i>
+                </div>
+              </div>
+
+              <div class="" *ngFor="let com of comments">
+                <div class="reviews-members py-3">
+                  <div class="media">
+                    <a href="#"><img src="{{com.user.picture}}" class="mr-3 rounded-pill" style="width: 36px;height: 36px"></a>
+                    <div class="media-body">
+                      <div class="reviews-members-header">
+                        <h6 class="mb-0"><a class="text-dark" >{{com.user.surname}} {{com.user.name}}</a></h6>
+                        <p class="text-muted small">{{com.date}}</p>
+                      </div>
+                      <div class="star-rating float-right">
+                        <div class="d-inline-block" style="font-size: 14px;">
+                          <button (click)="makeReactionOnComment(com.id)" class="total-like btn btn-sm btn-outline-primary"><i class="feather-thumbs-up"></i>
+                            {{com.nb_like}}</button>
+
+                        </div>
+                      </div>
+                      <div class="reviews-members-body">
+                        <p>{{com.message}}</p>
+                      </div>
+                      <div class="reviews-members-footer">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <hr>
+              </div>
+              <button *ngIf="canLoadMore" class="btn btn-danger text-center w-100 d-block mt-3 font-weight-bold" >{{'load more'|translate}}<img *ngIf="loadingMore"  class=" font-weight-bold ml-auto loader-min" src="assets/img/spinner.gif" /></button>
+            </div>
+
+            <div class="bg-white rounded shadow-sm p-3 rating-review-select-page">
+              <h6 class="mb-3">{{'leave_comment'|translate}}</h6>
+              <div class="row">
+
+                  <button class="btn btn-primary ml-3"><i class="feather-facebook"></i></button>
+                  <button class="btn btn-primary ml-3"><i class="feather-twitter"></i></button>
+                  <button class="btn btn-primary ml-3"><i class="feather-linkedin"></i></button>
+
+              </div>
+              <div class="d-flex align-items-center mb-3" *ngIf="isLogin">
+                <div class="star-rating ml-auto">
+                  <p class="m-0 small">{{'rate_article'|translate}}</p>
+                  <div class="d-inline-block">
+                    <button (click)="makeReactionOnArticle(1)" class="btn"><i style="font-size: 28px" class="feather-star text-warning"></i></button>
+                    <button (click)="makeReactionOnArticle(2)" class="btn"><i style="font-size: 28px" class="feather-star text-warning"></i></button>
+                    <button (click)="makeReactionOnArticle(3)" class="btn"><i style="font-size: 28px" class="feather-star text-warning"></i></button>
+                    <button (click)="makeReactionOnArticle(4)" class="btn"><i style="font-size: 28px" class="feather-star text-warning"></i></button>
+                    <button (click)="makeReactionOnArticle(5)" class="btn"><i style="font-size: 28px" class="feather-star text-warning"></i></button>
+                  </div>
+                </div>
+              </div>
+              <form [formGroup]="formComment" *ngIf="isLogin">
+                <div class="form-group">
+                  <label for="reg_description" class="form-label small">{{'your_comment'|translate}}</label>
+                  <textarea  id="reg_description" class="form-control" formControlName="message" name="message" required></textarea>
+                  <div *ngIf="f1.message.invalid && f1.message.touched && f1.message.errors?.minlength"  class="text-danger">
+                    {{'message error'|translate}}
+                  </div>
+                </div>
+                <div *ngIf="formCommentError!=''" class="form-group text-danger">
+                  {{formCommentError}}
+                </div>
+                <div class="form-group mb-0">
+                  <button (click)="makeComment()" [disabled]="formComment.invalid || sendingComment" type="button" class="btn btn-primary btn-block">{{'send'|translate}} <img *ngIf="sendingComment"  class=" font-weight-bold ml-auto loader-min" src="assets/img/spinner.gif" /></button>
+                </div>
+              </form>
+              <div class="alert alert-danger" *ngIf="!isLogin">
+                <h6>{{'comment_alert'|translate}}</h6>
+
+              </div>
+            </div>
+
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+
+
+
+    <app-footer></app-footer>
+  </div>
+</div>

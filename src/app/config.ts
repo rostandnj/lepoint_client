@@ -1,8 +1,8 @@
 export class Config {
   public static langs = ['en', 'fr'];
   public static appTitle = 'entity-Cameroon';
-  public static apiUrl = 'https://api.lepoint.cm/';
-  public static apiSecure = 'https://api.lepoint.cm/api';
+  public static apiUrl = 'http://localhost/lepointApi/public/';
+  public static apiSecure = 'http://localhost/lepointApi/public/api';
   public static entityList = 'list/active/entity';
   public static login = 'api/login';
   public static signup = 'register/client';
@@ -76,4 +76,15 @@ export class Config {
   public static showAdvert = 'show/advert';
   public static getQrCodeCocan = 'get/qr/code/cocan';
   public static updateLocation = 'api/update/location';
+  public static uploadEditor = 'ckfinder/connector';
+  public static addArticle = 'api/article/create';
+  public static userArticles = 'api/article/user';
+  public static recentArticles = 'article/recents';
+  public static updateArticle = 'api/article/update';
+  public static deleteArticle = 'api/article/delete';
+  public static showArticle = 'article/show';
+  public static commentArticle = 'api/comment/create';
+  public static reactOnArticle = 'api/article/react';
+  public static reactOnComment = 'api/comment/react';
+  public static listComments = 'comment/list';
 }

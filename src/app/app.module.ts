@@ -4,15 +4,12 @@ import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from '@angular/common/h
 import {TranslateLoader, TranslateModule, TranslateService} from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {RouterModule, Routes} from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
 import {Interceptor} from './service/interceptor';
 import {ApiService} from './service/api-service';
-import {isObject} from 'rxjs/internal-compatibility';
 import { SlickCarouselModule } from 'ngx-slick-carousel';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
-
-
+import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -50,6 +47,10 @@ import { ShowAdvertComponent } from './show-advert/show-advert.component';
 import { NightPharmacyComponent } from './night-pharmacy/night-pharmacy.component';
 import { CocanComponent } from './cocan/cocan.component';
 import { GoogleMapsModule } from '@angular/google-maps';
+import { NewsComponent } from './news/news.component';
+import { AdminBlogComponent } from './admin-blog/admin-blog.component';
+import { AngularConfirmModalModule } from 'angular-confirm-modal';
+import { ShowArticleComponent } from './show-article/show-article.component';
 
 
 
@@ -88,7 +89,10 @@ export function TranslationLoaderFactory(http: HttpClient) {
     PlaceComponent,
     ShowAdvertComponent,
     NightPharmacyComponent,
-    CocanComponent
+    CocanComponent,
+    NewsComponent,
+    AdminBlogComponent,
+    ShowArticleComponent
   ],
   imports: [
     BrowserModule,
@@ -99,12 +103,20 @@ export function TranslationLoaderFactory(http: HttpClient) {
     AlertModule.forRoot(),
     SlickCarouselModule,
     GoogleMapsModule,
+    AngularConfirmModalModule.forRoot({
+     confirmBtnClass: 'btn btn-success', confirmBtnText: 'Confirm',
+      cancelBtnClass: 'btn btn-danger',
+      cancelBtnText: 'Cancel',
+      modalSize: 'lg',
+      modalClass: 'some-modal-class'
+    }),
     TranslateModule.forRoot({
       defaultLanguage: 'fr',
       loader: {provide: TranslateLoader, useFactory: TranslationLoaderFactory, deps: [HttpClient]}
     }),
     BrowserAnimationsModule,
     ReactiveFormsModule,
+    CKEditorModule,
   ],
   providers: [CookieService, ConstantsService, ApiService, TranslateService, AuthService,
     {provide: HTTP_INTERCEPTORS, useClass: Interceptor, multi: true}, {provide: LocationStrategy, useClass: HashLocationStrategy}],

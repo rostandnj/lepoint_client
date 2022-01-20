@@ -1,0 +1,88 @@
+<div class="fixed-bottom-bar">
+  <div class="osahan-home-page">
+    <div class=" p-2" style="background: linear-gradient(45deg, #248964, #cf5f57, #f3dd9f);">
+      <app-header></app-header>
+
+    </div>
+
+    <div class="bg-light home-list main-content" >
+
+      <alert *ngIf="globalAlertStatus != ''" type="info" [dismissOnTimeout]="10000">
+        <strong>{{globalAlertStatus}}</strong>
+      </alert>
+      <div class="row container-fluid mt-4" >
+        <div class="col-md-12" style="text-align: center">
+          <h6>{{'news_intro'|translate}} <img *ngIf="loading"  class=" font-weight-bold ml-auto loader-min" src="assets/img/spinner.gif" /></h6>
+        </div>
+      </div>
+
+
+
+
+      <div class="row">
+        <div *ngFor="let art of articles" class="col-lg-4 col-md-4 col-sm-12 mt-4 mb-4">
+          <div class="list-card bg-white h-100 rounded overflow-hidden position-relative shadow-sm">
+            <div class="list-card-image" style="height: 270px">
+              <div class="star position-absolute">
+              </div>
+
+              <div class="member-plan position-absolute">
+                      <span class="badge badge-dark" *ngIf="art.type == 10">
+                     COCAN
+                    </span>
+                <span class="badge badge-dark" *ngIf="art.type == 0">
+                    {{'general_type'|translate}}
+                    </span>
+
+              </div>
+              <a style="cursor: pointer"  routerLink="/article/{{art.slug}}">
+                <img src="{{art.image_cover}}" class="img-fluid item-img w-100">
+              </a>
+            </div>
+            <div class="p-3 position-relative">
+              <div class="list-card-body">
+                <h6 class="mb-1"><a href="#" class="text-black" tabindex="-1">{{art.title.slice(0,100)}}
+                </a>
+                </h6>
+                <p class="text-gray mb-3">
+
+                </p>
+
+                <ul class="rating-stars float-right list-unstyled">
+                  <li>
+                    <i class="feather-star text-warning" *ngFor="let good of goodStart(art.rate)"></i>
+                    <i class="feather-star" *ngFor="let good of badStart(art.rate)"></i>
+                  </li>
+                </ul>
+
+
+              </div>
+              <a routerLink="/article/{{art.slug}}" class="list-card-badge">
+                <span class="total-like btn btn-sm btn-outline-primary" ><i class="feather-message-square"></i>
+                  {{art.nb_comment}}</span>
+                <span class="total-like btn btn-sm btn-outline-primary ml-2" ><i class="feather-eye"></i>
+                  {{art.nb_view}}</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row container-fluid">
+        <button (click)="getMoreArticles()" *ngIf="canLoadMoreArticle" class="btn btn-primary btn-block w-50">
+          {{'load more'|translate}}<img *ngIf="loadingMore"  class=" font-weight-bold ml-auto loader-min" src="assets/img/spinner.gif" />
+        </button>
+      </div>
+
+
+
+
+
+
+
+    </div>
+
+    <app-footer></app-footer>
+
+  </div>
+</div>

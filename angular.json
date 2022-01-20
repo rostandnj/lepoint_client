@@ -37,7 +37,9 @@
               "src/vendor/sidebar/hc-offcanvas-nav.js",
               "src/assets/js/osahan.js",
               "node_modules/slick-carousel/slick/slick.min.js",
-              "src/vendor/rocket-loader.min.js"
+              "src/vendor/rocket-loader.min.js",
+              "node_modules/@ckeditor/ckeditor5-build-classic/build/translations/en-gb.js",
+              "node_modules/@ckeditor/ckeditor5-build-classic/build/translations/fr.js"
             ]
           },
           "configurations": {
@@ -97,7 +99,8 @@
             "karmaConfig": "karma.conf.js",
             "assets": [
               "src/favicon.ico",
-              "src/assets"
+              "src/assets",
+              { "glob": "**/*", "input": "node_modules/tinymce", "output": "/tinymce/" }
             ],
             "styles": [
               "src/styles.css"

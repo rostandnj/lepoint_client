@@ -204,5 +204,21 @@
   "stadium": "Stadiums",
   "add location": "add location",
   "show in map": "show in map",
-  "looking for entity": "Places, informations, .."
+  "looking for entity": "Places, informations, ..",
+  "news_page": "News",
+  "news_intro": "Stay tuned for real-time information",
+  "manage_news": "Manage news",
+  "create_article": "Create new article",
+  "edit_article": "Edit article",
+  "general_type": "General",
+  "min_character_allowed": "Min character allowed",
+  "current_character": "Characters ",
+  "delete_message": "Do you really want to delete this item ?",
+  "rating_and_reviews": "All Ratings and Reviews",
+  "rate_article": "Rate article",
+  "leave_comment": "Leave comment",
+  "your_comment": "Leave comment",
+  "comment_alert": "Please login before comment",
+  "reaction added": "Reaction added",
+  "comment added": "Comment added"
 }
