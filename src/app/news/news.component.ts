@@ -25,10 +25,7 @@ export class NewsComponent implements OnInit {
   articles: Article[];
   currentLangSubscription: Subscription;
   currentLang: string;
-  menuTitle = null;
   addedItem = false;
-  configLink = Config.apiUrl + Config.getQrCode;
-  configLinkAdvert = Config.apiUrl + Config.getQrCodeAdvert;
   currentLogo  = '';
   articleOffset = 0;
   openArticle: Article;
@@ -39,27 +36,7 @@ export class NewsComponent implements OnInit {
   canLoadMoreArticle = false;
   alertStatus: boolean;
   alertMsg: string;
-  public Editor = ClassicEditor;
-
-  public config = {
-    language: 'fr',
-    isReadOnly: true,
-    ckfinder: {
-      uploadUrl: Config.apiUrl + Config.uploadEditor + '?command=QuickUpload&type=Images&responseType=json',
-      headers: {
-        Authorization: 'Bearer ',
-        lang: ''
-      },
-      options: {
-        resourceType: 'Images',
-        resizeImages: true,
-      },
-      openerMethod: 'popup'
-    }
-  };
   currentLogoSubscription: Subscription;
-  showExtensions2 = ['image/jpg', 'image/jpeg', 'image/png', 'image/gif', 'image/pjpg'];
-  showExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.jpg'];
 
   constructor( private entityService: EntityService, private actRoute: ActivatedRoute,
                private authService: AuthService, private constantService: ConstantsService, private httpClient: HttpClient,
@@ -75,11 +52,6 @@ export class NewsComponent implements OnInit {
     });
     this.currentLangSubscription = this.constantService.currentLangSubject.subscribe((lang) => {
       this.currentLang = lang;
-      if (lang === 'en'){
-        this.config.language = 'en-gb';
-      }else{
-        this.config.language = 'fr';
-      }
 
     }, (error) => {
       console.log(error);

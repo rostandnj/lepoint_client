@@ -14,5 +14,6 @@ export interface Article {
   rate: bigint;
   nb_comment: bigint;
   type: number;
+  links: any;
   user: User;
 }

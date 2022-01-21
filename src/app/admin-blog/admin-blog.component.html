@@ -44,7 +44,7 @@
 
                    </div>
                    <a routerLink="/article/{{art.slug}}">
-                     <img src="{{art.image_cover}}" class="img-fluid item-img w-100">
+                     <img src="{{art.image_cover}}" class="img-fluid item-img w-100 h-100">
                    </a>
                  </div>
                  <div class="p-3 position-relative">
@@ -53,14 +53,14 @@
                      </a>
                      </h6>
                      <p class="text-gray mb-3">
-                       <button class="btn btn-secondary float-left" (click)="openModalArticle(art, templateEditArticle)"> {{'edit'|translate}}</button>
+                       <button class="btn btn-info float-left" (click)="openModalArticle(art, templateEditArticle)"> {{'edit'|translate}}</button>
                        <button class="btn btn-primary float-right" (click)="openModal(art,template)"> <i class="feather-trash"></i></button>
 
                      </p>
 
                      <ul class="rating-stars float-right list-unstyled">
                        <li>
-                         <i class="feather-star text-warning" *ngFor="let good of goodStart(art.rate)"></i>
+                         <i class="feather-star text-warning star_active" *ngFor="let good of goodStart(art.rate)"></i>
                          <i class="feather-star" *ngFor="let good of badStart(art.rate)"></i>
                        </li>
                      </ul>

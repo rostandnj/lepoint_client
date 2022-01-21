@@ -19,7 +19,7 @@
 
 
 
-      <div class="row">
+      <div class="row container-fluid">
         <div *ngFor="let art of articles" class="col-lg-4 col-md-4 col-sm-12 mt-4 mb-4">
           <div class="list-card bg-white h-100 rounded overflow-hidden position-relative shadow-sm">
             <div class="list-card-image" style="height: 270px">
@@ -36,7 +36,7 @@
 
               </div>
               <a style="cursor: pointer"  routerLink="/article/{{art.slug}}">
-                <img src="{{art.image_cover}}" class="img-fluid item-img w-100">
+                <img src="{{art.image_cover}}" class="img-fluid item-img w-100 h-100">
               </a>
             </div>
             <div class="p-3 position-relative">
@@ -50,7 +50,7 @@
 
                 <ul class="rating-stars float-right list-unstyled">
                   <li>
-                    <i class="feather-star text-warning" *ngFor="let good of goodStart(art.rate)"></i>
+                    <i class="feather-star text-warning star_active" *ngFor="let good of goodStart(art.rate)"></i>
                     <i class="feather-star" *ngFor="let good of badStart(art.rate)"></i>
                   </li>
                 </ul>

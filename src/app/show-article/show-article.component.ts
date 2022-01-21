@@ -39,6 +39,7 @@ export class ShowArticleComponent implements OnInit {
   loadingMore = false;
   canLoadMore = false;
   sendingComment = false;
+  commentOffset = 0;
   formComment: FormGroup;
   openArticle: Article;
   comments: CommentArticle[];
@@ -106,7 +107,8 @@ export class ShowArticleComponent implements OnInit {
   ngOnInit(): void {
     this.currentLang = this.constantService.currentLang;
     this.slug = this.route.snapshot.paramMap.get('slug');
-    this.entityService.showArticle({slug: this.slug}).subscribe((res: ArticleAndComment) => {
+    this.entityService.showArticle({slug: this.slug,
+      limit: this.entityService.userLimit, offset: this.commentOffset}).subscribe((res: ArticleAndComment) => {
       this.loading = false;
       this.openArticle = res.article;
       if (this.openArticle.image_cover === null || this.openArticle.image_cover.length === 0 ){
@@ -116,10 +118,16 @@ export class ShowArticleComponent implements OnInit {
         this.openArticle.image_cover = Config.apiUrl + '/uploads/' + this.openArticle.image_cover;
       }
 
+      if (this.openArticle.type === 10){
+        this.constantService.updateLogoAsset('cocan-logo.jpg');
+      }
+
       res.comments.forEach((el) => {
         el.user.picture = Config.apiUrl + '/uploads/' + el.user.picture;
         this.comments.push(el);
       });
+      this.canLoadMore = res.comments.length === this.entityService.userLimit;
+      this.commentOffset = this.commentOffset + this.entityService.userLimit;
 
     }, (error) => {
       this.loading = false;
@@ -145,7 +153,6 @@ export class ShowArticleComponent implements OnInit {
     for (let i = 1; i <= nb; i ++) {
       output.push(i);
     }
-    console.log(output);
     return output;
   }
   badStart(nb){
@@ -257,6 +264,35 @@ export class ShowArticleComponent implements OnInit {
         }
         else{
           this.formCommentError = error.error.message;
+        }
+        console.log(error.error);
+
+      }, () => {
+
+      });
+    }
+  }
+
+  getMoreComment(){
+    if (this.canLoadMore){
+      this.loadingMore = true;
+      this.entityService.listComments({id: this.openArticle.id,
+        limit: this.entityService.userLimit, offset: this.commentOffset}).subscribe((res: CommentArticle[]) => {
+        this.loadingMore = false;
+        res.forEach((el) => {
+          el.user.picture = Config.apiUrl + '/uploads/' + el.user.picture;
+          this.comments.push(el);
+        });
+        this.canLoadMore = res.length === this.entityService.userLimit;
+        this.commentOffset = this.commentOffset + this.entityService.userLimit;
+
+      }, (error) => {
+        this.loadingMore = false;
+        if (error.error.message === undefined){
+          this.constantService.updateGlobalStatus(error.error);
+        }
+        else{
+          this.constantService.updateGlobalStatus(error.error.message);
         }
         console.log(error.error);
 

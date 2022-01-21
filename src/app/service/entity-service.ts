@@ -493,6 +493,10 @@ export class EntityService {
     return this.apiService.post(Config.recentArticles, data);
   }
 
+  cocanArticles(data){
+    return this.apiService.post(Config.cocanArticles, data);
+  }
+
   updateArticle(data){
     return this.apiService.post(Config.updateArticle, data);
   }

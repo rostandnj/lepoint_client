@@ -48,7 +48,7 @@
           <p style="font-size: 14px" class="font-weight-light text-dark m-0"> <span class="feather-map-pin"></span> {{entity.location.city}}, {{entity.location.street}}, {{entity.location.street_detail}}</p>
 
         </div>
-        <h6  style="font-size: 11px">{{'payment method'}}</h6>
+        <h6  style="font-size: 11px">{{'payment method'|translate}}</h6>
         <div class="row container-fluid mb-2">
 
             <div  *ngFor="let pay of entity.accepted_pay_modes" class="card profile-card-5" style="width: 33%;align-items: center;min-height: 130px">

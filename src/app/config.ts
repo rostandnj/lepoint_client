@@ -80,6 +80,7 @@ export class Config {
   public static addArticle = 'api/article/create';
   public static userArticles = 'api/article/user';
   public static recentArticles = 'article/recents';
+  public static cocanArticles = 'article/cocan';
   public static updateArticle = 'api/article/update';
   public static deleteArticle = 'api/article/delete';
   public static showArticle = 'article/show';

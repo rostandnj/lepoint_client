@@ -247,7 +247,7 @@
                             <a style="color: black;font-size: 12px" target="_blank" href="{{ cartToShow.entity.global_info.website.replace(' ', '') }}"> {{cartToShow.entity.global_info.website.replace(' ', '')}}</a>
                           </p>
                         </div>
-                        <h6  style="font-size: 11px">{{'payment method'}}</h6>
+                        <h6  style="font-size: 11px">{{'payment method'|translate}}</h6>
                         <div class="row container-fluid mb-2">
 
                           <div  *ngFor="let pay of cartToShow.entity.accepted_pay_modes" class="card profile-card-5" style="width: 33%;align-items: center;min-height: 130px">

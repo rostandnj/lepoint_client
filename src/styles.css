@@ -683,16 +683,16 @@ p {
 }
 
 .rating-stars .feather-star {
-  font-size: 10px;
-  background: #b5b5b5;
-  color: #fff;
+  font-size: 16px;
+  /*background: #b5b5b5;*/
+  color: #6c510091;
   padding: 2px;
-  text-shadow: 0 0 1px #d2b128;
+  /*text-shadow: 0 0 1px #ffeb3b;*/
   border-radius: 5px;
 }
 
 .rating-stars .feather-star.star_active {
-  background: #f5cd25;
+  /*background: #f5cd25;*/
 }
 
 /* Login Page */
@@ -1372,3 +1372,4 @@ background-color: white!important;
 figure img{
   max-width: 100%!important;
 }
+
